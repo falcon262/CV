@@ -393,6 +393,7 @@
         
         .recognition-card {
             background: rgba(255,255,255,0.05);
+            -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
             padding: 2rem;
             border-radius: 15px;
@@ -453,6 +454,198 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
         
+        /* Featured Project Styles */
+        .featured-project-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .featured-project-card {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            background: #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+            border: 2px solid var(--primary-gold);
+        }
+        
+        .featured-project-image {
+            height: 100%;
+            min-height: 500px;
+            overflow: hidden;
+        }
+        
+        .featured-project-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .featured-project-card:hover .featured-project-image img {
+            transform: scale(1.05);
+        }
+        
+        .featured-project-content {
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .featured-badge {
+            display: inline-block;
+            background: var(--warning-orange);
+            color: #fff;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            width: fit-content;
+        }
+        
+        .featured-title {
+            font-size: 2.5rem;
+            color: var(--secondary-dark);
+            margin-bottom: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .featured-description {
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            font-size: 1.05rem;
+        }
+        
+        .tech-stack h4 {
+            color: var(--secondary-dark);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        
+        .tech-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+        
+        .tech-badge {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(0, 255, 136, 0.2));
+            padding: 0.5rem 1.2rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--secondary-dark);
+            border: 1px solid var(--primary-gold);
+        }
+        
+        .btn-disabled {
+            padding: 1rem 2.5rem;
+            border: 2px solid #ccc;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            background: #f0f0f0;
+            color: #999;
+            cursor: not-allowed;
+            opacity: 0.6;
+            width: fit-content;
+        }
+        
+        /* Game Projects Grid */
+        .game-projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2.5rem;
+            margin-top: 2rem;
+        }
+        
+        .game-project-card {
+            background: #fff;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 1px solid #f0f0f0;
+        }
+        
+        .game-project-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+        }
+        
+        .game-project-image {
+            position: relative;
+            height: 280px;
+            overflow: hidden;
+        }
+        
+        .game-project-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .game-project-card:hover .game-project-image img {
+            transform: scale(1.1);
+        }
+        
+        .project-overlay-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        
+        .project-badge {
+            background: var(--primary-gold);
+            color: var(--secondary-dark);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .game-project-content {
+            padding: 2rem;
+        }
+        
+        .game-project-content h3 {
+            color: var(--secondary-dark);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+        
+        .game-project-content p {
+            color: #666;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+        
+        .project-tech {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .project-tech span {
+            background: var(--light-gray);
+            color: var(--secondary-dark);
+            padding: 0.4rem 1rem;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: 1px solid #e0e0e0;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .hero-content {
@@ -494,6 +687,26 @@
             .stats-grid {
                 grid-template-columns: 1fr;
             }
+            
+            .featured-project-card {
+                grid-template-columns: 1fr;
+            }
+            
+            .featured-project-image {
+                min-height: 300px;
+            }
+            
+            .featured-project-content {
+                padding: 2rem;
+            }
+            
+            .featured-title {
+                font-size: 2rem;
+            }
+            
+            .game-projects-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -506,13 +719,14 @@
                     <h1>Joseph Kofi Asante</h1>
                     <div class="title">Senior Technical Consultant - Full-Stack Architecture Expert</div>
                     <div class="subtitle">
-                        Accomplished Full-Stack Engineer with 6+ years of expertise in Angular frontend development and C#/.NET Core backend architecture, specializing in Azure cloud solutions and fintech applications. Proven track record of architecting enterprise-grade solutions for major financial institutions, with deep technical knowledge spanning microservices, event-driven systems, and AI integration. Currently leading technical teams at PwC Ghana and TechHalo, delivering complex financial automation platforms. Strong communicator with experience presenting technical concepts to stakeholders, mentoring teams, and driving architectural decisions. Well-versed in US fintech standards through work with international banking clients.
+                        An Experienced Full-Stack Engineer with 6+ years of expertise in Angular frontend development and C#/.NET Core backend architecture, specializing in Azure cloud solutions and fintech applications. Proven track record of architecting enterprise-grade solutions for major financial institutions, with technical knowledge spanning microservices, event-driven systems, and AI integration and Game/Simulations development.. Currently leading technical teams at PwC Ghana and TechHalo, delivering complex financial automation platforms. Strong communicator with experience presenting technical concepts to stakeholders, mentoring teams, and driving architectural decisions. Well-versed in fintech standards through work with both local and international banking clients.
                     </div>
                     
                     <div class="contact-links">
                         <a href="mailto:thommpson19@gmail.com" class="contact-link">📧 Email</a>
                         <a href="https://linkedin.com" class="contact-link">💼 LinkedIn</a>
                         <a href="tel:+233558016442" class="contact-link">📱 +233 558 016 442</a>
+                        <a href="https://youtu.be/yi41dsn64So" class="contact-link" target="_blank" rel="noopener">🎮 Game Projects</a>
                     </div>
                     
                     <div class="stats-grid">
@@ -521,7 +735,7 @@
                             <span class="stat-label">Years Experience</span>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-number">8</span>
+                            <span class="stat-number">3</span>
                             <span class="stat-label">Microservices Built</span>
                         </div>
                         <div class="stat-item">
@@ -689,16 +903,16 @@
                 </div>
                 
                 <div class="skill-category">
-                    <h3>🏗️ Architecture Patterns</h3>
+                    <h3>🎮 Game Development / XR Domain</h3>
                     <div class="skill-list">
-                        <span class="skill-tag">Microservices</span>
-                        <span class="skill-tag">Event-Driven</span>
-                        <span class="skill-tag">Saga Pattern</span>
-                        <span class="skill-tag">Outbox Pattern</span>
-                        <span class="skill-tag">API Gateway</span>
-                        <span class="skill-tag">DDD</span>
-                        <span class="skill-tag">Clean Architecture</span>
-                        <span class="skill-tag">Hangfire</span>
+                        <span class="skill-tag">Unity3D</span>
+                        <span class="skill-tag">C# Game Development</span>
+                        <span class="skill-tag">Virtual Reality (VR)</span>
+                        <span class="skill-tag">Augmented Reality (AR)</span>
+                        <span class="skill-tag">Real Estate XR Experiences</span>
+                        <span class="skill-tag">3D Visualization</span>
+                        <span class="skill-tag">Interactive Simulations</span>
+                        <span class="skill-tag">Property Tours</span>
                     </div>
                 </div>
             </div>
@@ -787,6 +1001,171 @@
         </div>
     </section>
 
+    <!-- Current Project Section -->
+    <section class="experience-section" style="background: var(--light-gray);">
+        <div class="container">
+            <div class="section-header">
+                <h2 style="color: var(--secondary-dark);">Current Project - Work in Progress</h2>
+                <p style="color: #666;">Latest innovation in real estate technology</p>
+            </div>
+            
+            <div class="featured-project-container">
+                <div class="featured-project-card">
+                    <div class="featured-project-image">
+                        <img src="game_images/Dwello.png" alt="Dwello Home Customization">
+                    </div>
+                    <div class="featured-project-content">
+                        <span class="featured-badge">🚧 In Development</span>
+                        <h3 class="featured-title">Dwello</h3>
+                        <p class="featured-description">A revolutionary home customization tool that empowers users to renovate and redesign their homes, both interior and exterior. Dwello features seamless integrations with your favorite suppliers and brands, offering real-time visualization of materials, furniture, and design elements. Transform your living space with interactive 3D modeling, virtual walkthroughs, and instant cost estimates from trusted partners.</p>
+                        
+                        <div class="tech-stack">
+                            <h4>Technologies:</h4>
+                            <div class="tech-tags">
+                                <span class="tech-badge">Unity</span>
+                                <span class="tech-badge">C#</span>
+                                <span class="tech-badge">3D Modeling</span>
+                                <span class="tech-badge">AI Pathfinding</span>
+                                <span class="tech-badge">Procedural Generation</span>
+                            </div>
+                        </div>
+                        
+                        <button class="btn-disabled" disabled>
+                            <span style="text-decoration: line-through;">Run Dwello</span>
+                            <span style="font-size: 0.8rem; margin-left: 10px;">(Coming Soon)</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Game Projects Portfolio -->
+    <section class="experience-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Game Projects Portfolio</h2>
+                <p>Showcasing interactive experiences and XR applications</p>
+            </div>
+            
+            <div class="game-projects-grid">
+                <!-- Heroes of the Past -->
+                <div class="game-project-card">
+                    <div class="game-project-image">
+                        <img src="game_images/Heroes of the Past.png" alt="Heroes of the Past">
+                        <div class="project-overlay-info">
+                            <span class="project-badge">Game Development</span>
+                        </div>
+                    </div>
+                    <div class="game-project-content">
+                        <h3>Heroes of the Past</h3>
+                        <p>An immersive historical adventure game that brings African history to life through interactive storytelling. Players explore significant historical events and cultural heritage, learning through engaging gameplay mechanics and authentic narratives.</p>
+                        <div class="project-tech">
+                            <span>Unity</span>
+                            <span>C#</span>
+                            <span>Historical Research</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gold Coast -->
+                <div class="game-project-card">
+                    <div class="game-project-image">
+                        <img src="game_images/Gold Coast.png" alt="Gold Coast">
+                        <div class="project-overlay-info">
+                            <span class="project-badge">Educational Game</span>
+                        </div>
+                    </div>
+                    <div class="game-project-content">
+                        <h3>Gold Coast</h3>
+                        <p>An educational game exploring Ghana's colonial history and the journey to independence. Players navigate through historical periods, making decisions that impact the storyline while learning about the rich cultural and political heritage of the Gold Coast era.</p>
+                        <div class="project-tech">
+                            <span>Unity3D</span>
+                            <span>Narrative Design</span>
+                            <span>3D Assets</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ghana Tech Lab -->
+                <div class="game-project-card">
+                    <div class="game-project-image">
+                        <img src="game_images/Ghana Tech Lab.png" alt="Ghana Tech Lab">
+                        <div class="project-overlay-info">
+                            <span class="project-badge">STEM Education</span>
+                        </div>
+                    </div>
+                    <div class="game-project-content">
+                        <h3>Ghana Tech Lab</h3>
+                        <p>An innovative STEM learning platform that introduces students to technology, engineering, and programming concepts through interactive experiments and challenges. Features hands-on virtual laboratories and coding exercises designed for African educational contexts.</p>
+                        <div class="project-tech">
+                            <span>Unity</span>
+                            <span>Educational Design</span>
+                            <span>Interactive Simulations</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3D Visual Scripting -->
+                <div class="game-project-card">
+                    <div class="game-project-image">
+                        <img src="game_images/3D Visual Scripting.png" alt="3D Visual Scripting">
+                        <div class="project-overlay-info">
+                            <span class="project-badge">Educational Tool</span>
+                        </div>
+                    </div>
+                    <div class="game-project-content">
+                        <h3>3D Visual Scripting Engine</h3>
+                        <p>A node-based visual programming environment that enables students and educators to create interactive 3D applications without traditional coding. Features drag-and-drop logic building, real-time preview, and educational tutorials for teaching programming concepts.</p>
+                        <div class="project-tech">
+                            <span>Unity</span>
+                            <span>Visual Programming</span>
+                            <span>Node Editor</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Katapult Mauritius -->
+                <div class="game-project-card">
+                    <div class="game-project-image">
+                        <img src="game_images/3D Visual Scripting Katapult Mautitius.png" alt="Katapult Mauritius">
+                        <div class="project-overlay-info">
+                            <span class="project-badge">Robotics Education</span>
+                        </div>
+                    </div>
+                    <div class="game-project-content">
+                        <h3>Katapult Mauritius - Visual Scripting</h3>
+                        <p>An advanced visual scripting platform developed for PARC Robotics' educational initiatives in Mauritius. Enables students to program robots and create simulations using an intuitive visual interface, bridging the gap between concepts and practical robotics.</p>
+                        <div class="project-tech">
+                            <span>Unity</span>
+                            <span>Robotics Integration</span>
+                            <span>AI Logic</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3D GPS Navigation -->
+                <div class="game-project-card">
+                    <div class="game-project-image">
+                        <img src="game_images/3D GPS.png" alt="3D GPS Navigation">
+                        <div class="project-overlay-info">
+                            <span class="project-badge">Navigation System</span>
+                        </div>
+                    </div>
+                    <div class="game-project-content">
+                        <h3>3D GPS Navigation System</h3>
+                        <p>An immersive 3D navigation application that provides real-time GPS tracking with interactive 3D city models. Features accurate pathfinding, landmark recognition, and augmented reality integration for enhanced spatial awareness and navigation assistance.</p>
+                        <div class="project-tech">
+                            <span>Unity</span>
+                            <span>GPS Integration</span>
+                            <span>AR Foundation</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section class="cta-section">
         <div class="container">
             <h2>Ready to Connect?</h2>
@@ -826,7 +1205,7 @@
         }, observerOptions);
 
         // Apply fade-in animation to timeline items
-        document.querySelectorAll('.timeline-item, .skill-category, .education-card, .recognition-card').forEach(item => {
+        document.querySelectorAll('.timeline-item, .skill-category, .education-card, .recognition-card, .game-project-card, .featured-project-card').forEach(item => {
             item.style.opacity = '0';
             item.style.transform = 'translateY(30px)';
             item.style.transition = 'all 0.6s ease';
