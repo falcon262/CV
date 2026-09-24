@@ -184,3 +184,28 @@ BALANCED's colour change are opacity crossfades of overlay layers, not colour an
   Clipboard API the address is selected.
 - Reduced motion: no parse class, no animations at all (`document.getAnimations()` is
   empty), every screenshot in its final state.
+
+## M5: quality (2026-09-24)
+
+Not a layout pass, but the new visual assets were reviewed by eye: the Open Graph image
+(name, headline and a cropped slice of records 1 and 9 on paper, fading at the right edge)
+and the "JA" monogram, drawn from Schibsted Grotesk Bold outlines so it matches the site
+without loading a font.
+
+| Bar | Result |
+|---|---|
+| Lighthouse, mobile, `/` | Performance 100, Accessibility 100, Best Practices 100, SEO 100 (LCP 1.4s, CLS 0, TBT 0ms) |
+| Lighthouse, mobile, `/work/apl/` | Performance 99, Accessibility 100, Best Practices 100, SEO 100 (LCP 1.8s, CLS 0, TBT 0ms) |
+| Axe, 7 routes, light and dark, desktop and phone | 0 violations of any impact (serious and critical are the bar) |
+| Keyboard | Skip link first and working; every interactive element reached by Tab shows a 2px ring (24 stops on the home page at 1440, 20 at 390); the sheet traps Tab and Shift+Tab, closes on Escape and returns focus to "Menu" |
+| Client JavaScript | 2.04 KB gzipped for the whole site, 1.71 KB on the home page (budget 10 KB) |
+| Links in `dist/` | 232 internal references resolve, including anchors, `srcset` candidates and meta refreshes; `/CV/index.html`, `/CV/Hobbies.html` and `/CV/ContactMe.html` resolve. Only the CV PDF is pending (Joseph supplies it). |
+
+**What was wrong:** Best Practices scored 96 because `favicon.svg` and `favicon.png` did not
+exist yet (404s in the console). Fixed by adding the monogram favicon, its PNG fallback and
+an apple touch icon; the score is now 100.
+
+Also checked: JSON-LD `Person` (name, jobTitle, url, sameAs, address) parses as valid JSON;
+titles, descriptions, canonical and Open Graph tags match section 12; the sitemap lists the
+home page and the five case studies and leaves out `/og/` and the 404; `/og/` is noindex;
+robots.txt points at the sitemap.
