@@ -124,3 +124,63 @@ E-VAT 211, IFRS engines 214 (target 200 to 350).
 - Section 5.4: nothing forbidden; "Previous" and "Next" carry no arrows.
 - Tokens only; dark mode navy; no overflow at 390; reduced-motion shots show final states.
 - The 404 is the only centred page.
+
+## M4: motion (2026-09-24)
+
+**Shot:** hero keyframes at 0, 300, 700, 1100 and 1700ms (1440, light, motion on), plus every
+route at 1440, 768 and 390 in both themes with reduced motion on (47 screenshots), plus a
+mid-scroll capture of the experience timeline. Behaviour is covered by `tests/motion.spec.ts`
+(15 passing on desktop and phone profiles; hover is skipped on the phone profile by design).
+
+### Hero keyframes against K1 to K3
+
+- **0ms:** the record panel is empty (every record clipped from the right); headline, subline,
+  actions and availability are hidden. Correct start of K1.
+- **300ms:** records reveal left to right, 90ms apart: record 1 complete, 5 almost complete,
+  6 and 9 partway. The text is at full contrast while parsing. Correct K1.
+- **700ms:** all records revealed; the parsed-field underlines are half drawn left to right;
+  BALANCED is halfway from ink-muted to settled; the check is drawing. Correct K2.
+- **1100ms:** headline words rising 8px and fading in, 40ms apart; the record block is
+  settling towards its resting contrast; the subline group has not started. Correct K3.
+- **1700ms:** final state, identical to the reduced-motion screenshot.
+
+Nothing else animates on load. Only transform, opacity and clip-path animate in the hero,
+plus the check's stroke-dashoffset, which the brief specifies. The full-contrast phase and
+BALANCED's colour change are opacity crossfades of overlay layers, not colour animations.
+
+### Pass 1: what was wrong
+
+1. **Timeline and reading progress did not animate at all.** Vite 8's CSS minifier
+   (Lightning CSS) folded `animation-timeline` into the `animation` shorthand
+   (`animation: linear both timeline-rail --timeline`), which Chromium rejects, so
+   `animation-name` computed to `none`.
+2. **Hero keyframe capture failed** once scroll-driven animations existed, because their
+   `currentTime` cannot be set in milliseconds.
+3. **Tests.** The phone profile did not emulate a phone, so hover-only behaviour ran there,
+   and the hover test targeted text under the stretched tile link.
+
+### Changes
+
+1. Each timeline goes through a custom property (`animation-timeline: var(--rail-timeline)`),
+   which the minifier cannot fold. Verified in the built CSS and in the browser: the rail
+   fills to the middle of the viewport and each dot fills as it passes it; the reading
+   progress bar tracks the page.
+2. `npm run screens` freezes only document-timeline animations for the hero frames.
+3. The phone profile sets `isMobile`; the hover test hovers the tile itself.
+
+### Pass 2: checklist
+
+- Header hides after 120px of downward scroll, returns on scroll up, and stays while the
+  sheet is open or it holds focus.
+- Tiles: on hover (devices that hover) and on keyboard focus, the title underline draws in
+  `--dur-base` and the media frame lifts 4px; nothing else moves.
+- Cross-document view transitions: clicking the APL tile fires `pagereveal` with a view
+  transition; tile and case study share `work-apl-title` and `work-apl-media`, and names are
+  unique on each page. Unsupported browsers navigate normally.
+- Theme toggle: 200ms colour crossfade, sun and moon rotate, the label switches between
+  "Switch to dark theme" and "Switch to light theme", the choice persists and is applied
+  before first paint.
+- Copy email: "Copied" with a check for 1.6s, "Email copied" announced politely; without the
+  Clipboard API the address is selected.
+- Reduced motion: no parse class, no animations at all (`document.getAnimations()` is
+  empty), every screenshot in its final state.

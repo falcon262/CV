@@ -83,12 +83,14 @@ const Diagram = diagramFor(slug).component;
     outline-offset: 0;
   }
 
+  /* The title underline draws left to right on hover and keyboard focus. */
   .tile__title-text {
     background-image: linear-gradient(var(--color-brand), var(--color-brand));
     background-repeat: no-repeat;
     background-position: 0 100%;
     background-size: 0% var(--hairline);
     padding-bottom: 0.08em;
+    transition: background-size var(--dur-base) var(--ease-standard);
   }
 
   .tile__outcome {
@@ -138,6 +140,26 @@ const Diagram = diagramFor(slug).component;
     border: var(--hairline) solid var(--color-rule);
     border-radius: var(--radius-md);
     background: var(--color-surface);
+    transition: transform var(--dur-base) var(--ease-standard);
+  }
+
+  /* Hover (only where hover exists) and focus-visible: underline draws, media lifts 4px. Nothing else moves. */
+  @media (hover: hover) {
+    .tile:hover .tile__title-text {
+      background-size: 100% var(--hairline);
+    }
+
+    .tile:hover .tile__media {
+      transform: translateY(-4px);
+    }
+  }
+
+  .tile:has(.tile__link:focus-visible) .tile__title-text {
+    background-size: 100% var(--hairline);
+  }
+
+  .tile:has(.tile__link:focus-visible) .tile__media {
+    transform: translateY(-4px);
   }
 
   /* Feature tile: full width, media on the right at desktop, below the text otherwise. */

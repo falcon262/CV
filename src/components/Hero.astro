@@ -9,6 +9,18 @@ const words = headline.split(' ');
 ---
 
 <section class="hero" aria-labelledby="hero-title">
+  <script is:inline>
+    // Before the hero paints: play the parse sequence once per session, never under reduced motion.
+    (function () {
+      var hero = document.currentScript && document.currentScript.parentElement;
+      if (!hero || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      try {
+        if (sessionStorage.getItem('heroPlayed')) return;
+        sessionStorage.setItem('heroPlayed', '1');
+      } catch (e) {}
+      hero.classList.add('is-parsing');
+    })();
+  </script>
   <div class="container hero__grid">
     <div class="hero__text">
       <h1 id="hero-title" class="hero__headline" aria-label={headline}>
@@ -42,6 +54,10 @@ const words = headline.split(' ');
   </div>
 </section>
 
+<script>
+  import '../scripts/hero';
+</script>
+
 <style>
   .hero {
     padding-block: var(--space-7) var(--space-8);
@@ -74,6 +90,42 @@ const words = headline.split(' ');
 
   .word {
     display: inline-block;
+  }
+
+  /*
+    Parse sequence, about 1.6s (K3 here; K1 and K2 live in RecordBlock.astro).
+    K3, 900 to 1600ms: words rise 8px and fade in with a 40ms stagger, then the
+    subline, actions and availability fade in together.
+  */
+  .hero.is-parsing .word {
+    animation: hero-word-rise 360ms var(--ease-standard) both;
+    animation-delay: calc(900ms + var(--i) * 40ms);
+  }
+
+  .hero.is-parsing .hero__after {
+    animation: hero-fade-in 400ms var(--ease-standard) 1200ms both;
+  }
+
+  @keyframes hero-word-rise {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes hero-fade-in {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
   }
 
   .hero__after {

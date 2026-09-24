@@ -33,8 +33,11 @@
   @supports (animation-timeline: scroll()) {
     @media (prefers-reduced-motion: no-preference) {
       .progress__bar {
+        --progress-timeline: scroll(root block);
         animation: progress-grow linear both;
-        animation-timeline: scroll(root block);
+        /* Via a custom property, so the CSS minifier cannot fold the timeline into the
+           animation shorthand (which browsers reject). */
+        animation-timeline: var(--progress-timeline);
       }
     }
   }

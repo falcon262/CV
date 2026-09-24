@@ -126,9 +126,11 @@ async function captureHero(browser: Browser): Promise<string[]> {
   await page.goto(origin + base, { waitUntil: 'networkidle' });
   await page.evaluate(() => document.fonts.ready);
   for (const time of heroFrames) {
-    // Freeze every running animation at the same moment of the sequence.
+    // Freeze every time-based animation at the same moment of the sequence
+    // (scroll-driven animations follow the scroll position instead).
     await page.evaluate((ms) => {
       for (const animation of document.getAnimations()) {
+        if (animation.timeline !== document.timeline) continue;
         animation.pause();
         animation.currentTime = ms;
       }

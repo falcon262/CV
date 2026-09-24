@@ -123,6 +123,59 @@ function dateParts(dates: string, start: string, end?: string) {
     margin-top: var(--space-2);
   }
 
+  /*
+    Scroll-driven: the rail fills with brand as the section scrolls, and each dot
+    fills as it passes the middle of the viewport. Without support (or under
+    reduced motion) the rail and dots simply show filled.
+  */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .timeline {
+        view-timeline: --timeline block;
+      }
+
+      /* Timelines go through custom properties so the CSS minifier cannot fold them into
+         the animation shorthand (which browsers reject). */
+      .timeline::after {
+        --rail-timeline: --timeline;
+        animation: timeline-rail linear both;
+        animation-timeline: var(--rail-timeline);
+        animation-range: cover 50vh cover calc(100% - 50vh);
+      }
+
+      .timeline__item {
+        view-timeline: --timeline-item block;
+      }
+
+      .timeline__item::after {
+        --dot-timeline: --timeline-item;
+        animation: timeline-dot linear both;
+        animation-timeline: var(--dot-timeline);
+        animation-range: cover calc(50vh + 0.75em) cover calc(50vh + 1.5em);
+      }
+    }
+  }
+
+  @keyframes timeline-rail {
+    from {
+      transform: scaleY(0);
+    }
+
+    to {
+      transform: scaleY(1);
+    }
+  }
+
+  @keyframes timeline-dot {
+    from {
+      transform: scale(0);
+    }
+
+    to {
+      transform: scale(1);
+    }
+  }
+
   @media (max-width: 767.98px) {
     .timeline {
       padding-left: var(--space-6);
