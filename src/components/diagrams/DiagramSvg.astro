@@ -1,0 +1,137 @@
+---
+import { layoutDiagram, type LayoutSpec } from '../../lib/diagram';
+
+interface Props {
+  /** Unique on the page; prefixes the title, description and marker ids. */
+  uid: string;
+  title: string;
+  layout: LayoutSpec;
+  class?: string;
+}
+
+const { uid, title, layout, class: className } = Astro.props;
+const drawn = layoutDiagram(layout);
+const titleId = `${uid}-title`;
+const descId = `${uid}-desc`;
+const arrowId = `${uid}-arrow`;
+---
+
+<svg
+  class:list={['diagram-svg', className]}
+  role="img"
+  aria-labelledby={titleId}
+  aria-describedby={descId}
+  viewBox={drawn.viewBox}
+  width={drawn.width}
+  height={drawn.height}
+>
+  <title id={titleId}>{title}</title>
+  <desc id={descId}>{drawn.description}</desc>
+  <defs>
+    <marker
+      id={arrowId}
+      viewBox="0 0 8 8"
+      refX="8"
+      refY="4"
+      markerWidth="8"
+      markerHeight="8"
+      markerUnits="userSpaceOnUse"
+      orient="auto-start-reverse"
+    >
+      <path class="dg-arrowhead" d="M0 0.5 L8 4 L0 7.5 Z"></path>
+    </marker>
+  </defs>
+
+  {
+    drawn.notes.map((note) => (
+      <g class="dg-note">
+        <rect class="dg-note__box" x={note.x} y={note.y} width={note.w} height={note.h} rx="2" />
+        <text class="dg-note__text" x={note.text.x} y={note.text.y} text-anchor={note.text.anchor}>
+          {note.text.lines.map((line, index) => (
+            <tspan x={note.text.x} dy={index === 0 ? 0 : 17}>
+              {line}
+            </tspan>
+          ))}
+        </text>
+      </g>
+    ))
+  }
+
+  {
+    drawn.edges.map((edge) => (
+      <g class="dg-edge">
+        <path class="dg-edge__line" d={edge.d} marker-end={`url(#${arrowId})`} />
+        {edge.note && (
+          <text class="dg-edge__note" x={edge.note.x} y={edge.note.y} text-anchor={edge.note.anchor}>
+            {edge.note.lines.map((line, index) => (
+              <tspan x={edge.note!.x} dy={index === 0 ? 0 : 17}>
+                {line}
+              </tspan>
+            ))}
+          </text>
+        )}
+      </g>
+    ))
+  }
+
+  {
+    drawn.boxes.map((box) => (
+      <g class="dg-node">
+        <rect class="dg-node__box" x={box.x} y={box.y} width={box.w} height={box.h} rx="2" />
+        <text class="dg-node__label" x={box.text.x} y={box.text.y} text-anchor="middle">
+          {box.text.lines.map((line, index) => (
+            <tspan x={box.text.x} dy={index === 0 ? 0 : 18}>
+              {line}
+            </tspan>
+          ))}
+        </text>
+      </g>
+    ))
+  }
+</svg>
+
+<style>
+  .diagram-svg {
+    max-width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .dg-node__box {
+    fill: var(--color-paper);
+    stroke: var(--color-rule);
+    stroke-width: 1;
+  }
+
+  .dg-node__label {
+    font-family: var(--font-display);
+    font-size: var(--step-small);
+    font-weight: var(--weight-medium);
+    fill: var(--color-ink);
+  }
+
+  .dg-edge__line {
+    fill: none;
+    stroke: var(--color-brand);
+    stroke-width: 1.5;
+  }
+
+  .dg-arrowhead {
+    fill: var(--color-brand);
+  }
+
+  .dg-edge__note,
+  .dg-note__text {
+    font-family: var(--font-display);
+    font-size: var(--step-caption);
+    font-weight: var(--weight-medium);
+    fill: var(--color-ink-muted);
+  }
+
+  .dg-note__box {
+    fill: none;
+    stroke: var(--color-rule);
+    stroke-width: 1;
+    stroke-dasharray: 4 3;
+  }
+</style>

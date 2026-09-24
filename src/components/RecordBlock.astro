@@ -1,0 +1,238 @@
+---
+/**
+ * The hero record block: four NACHA-style records, 94 characters each.
+ * Final (resting) state is the default CSS; the parse animation is layered on
+ * top with .is-parsing (added to the hero, see Hero.astro).
+ */
+import { records, segments } from '../data/record';
+
+const lines = records.map((record, index) => ({
+  ...record,
+  index,
+  segments: segments(record),
+  // The full-contrast layer shown while parsing; BALANCED has its own colour change.
+  overlay: record.text.replace('BALANCED', '        '),
+}));
+---
+
+<div class="record" data-record>
+  <button class="record__button" type="button" aria-label="Replay the record animation" data-record-replay>
+    <span class="record__lines" aria-hidden="true">
+      {
+        lines.map((line) => (
+          <span class="record__line" data-type={line.type} data-overlay={line.overlay} style={`--line: ${line.index}`}>
+            {line.segments.map((segment) =>
+              segment.field ? (
+                <span class:list={['field', { 'field--balanced': segment.field === 'balanced' }]} data-text={segment.text}>
+                  {segment.text}
+                </span>
+              ) : (
+                segment.text
+              ),
+            )}
+            {line.type === '9' && (
+              <svg class="record__check" viewBox="0 0 12 12" width="12" height="12" focusable="false">
+                <path d="M2.25 6.4 4.9 9 9.75 3.25" pathLength="1" />
+              </svg>
+            )}
+          </span>
+        ))
+      }
+    </span>
+  </button>
+</div>
+
+<style>
+  .record {
+    /* Sized in characters: 94 per record, plus room for the check. */
+    --record-chars: 96;
+    --record-pad: var(--space-4);
+    container-type: inline-size;
+    min-width: 0;
+  }
+
+  .record__button {
+    display: block;
+    width: max-content;
+    max-width: none;
+    padding: var(--record-pad);
+    border: var(--hairline) solid var(--color-rule);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    color: var(--color-ink-muted);
+    font-family: var(--font-mono);
+    font-weight: var(--weight-medium);
+    /* Fit 96 mono characters (0.6em each) to the container, between 9px and 14px. */
+    font-size: clamp(0.5625rem, (100cqi - 2 * var(--record-pad) - 2px) / (var(--record-chars) * 0.6), var(--step-small));
+    line-height: 2;
+    font-variant-ligatures: none;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color var(--dur-fast) var(--ease-standard);
+  }
+
+  .record__button:hover {
+    border-color: var(--color-ink-muted);
+  }
+
+  .record__lines {
+    display: block;
+  }
+
+  .record__line {
+    position: relative;
+    display: block;
+    width: max-content;
+    padding-block: 0.35em;
+    white-space: pre;
+  }
+
+  /* Ledger rules between records. */
+  .record__line + .record__line {
+    border-top: var(--hairline) solid var(--color-rule);
+  }
+
+  .field {
+    position: relative;
+    color: var(--color-ink);
+  }
+
+  /* The parsed-field underline: 1px, brand. */
+  .field::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.2em;
+    height: var(--hairline);
+    background: var(--color-brand);
+    transform-origin: left center;
+  }
+
+  .field--balanced {
+    color: var(--color-settled);
+  }
+
+  .record__check {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    margin-left: 0.5ch;
+    vertical-align: -0.12em;
+    fill: none;
+    stroke: var(--color-settled);
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /*
+    Parse sequence (K1 and K2; K3 is in Hero.astro). Only transform, opacity,
+    clip-path and the check's stroke-dashoffset animate.
+    K1, 0 to 500ms: records reveal left to right, 90ms apart.
+    K2, 500 to 900ms: underlines draw, BALANCED turns settled, the check draws.
+    K3, 900 to 1600ms: the full-contrast layer fades, so the block settles.
+  */
+  :global(.hero.is-parsing) .record__line {
+    animation: record-reveal 230ms var(--ease-standard) both;
+    animation-delay: calc(var(--line) * 90ms);
+  }
+
+  /* Full-contrast copy of each record, shown while parsing. */
+  :global(.hero.is-parsing) .record__line::before {
+    content: attr(data-overlay);
+    position: absolute;
+    inset: 0;
+    padding-block: inherit;
+    color: var(--color-ink);
+    white-space: pre;
+    pointer-events: none;
+    animation: record-fade-out 700ms var(--ease-standard) 900ms both;
+  }
+
+  :global(.hero.is-parsing) .field::after {
+    animation: record-underline 400ms var(--ease-standard) 500ms both;
+  }
+
+  /* BALANCED starts in ink-muted and settles into the settled colour. */
+  :global(.hero.is-parsing) .field--balanced::before {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    background: var(--color-surface);
+    color: var(--color-ink-muted);
+    animation: record-fade-out 400ms var(--ease-standard) 500ms both;
+  }
+
+  :global(.hero.is-parsing) .record__check path {
+    stroke-dasharray: 1;
+    animation: record-check 300ms var(--ease-standard) 600ms both;
+  }
+
+  @keyframes record-reveal {
+    from {
+      clip-path: inset(0 100% 0 0);
+    }
+
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  @keyframes record-fade-out {
+    from {
+      opacity: 1;
+    }
+
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes record-underline {
+    from {
+      transform: scaleX(0);
+    }
+
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  @keyframes record-check {
+    from {
+      stroke-dashoffset: 1;
+    }
+
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  /*
+    Below 768px: only records 1 and 9. The block keeps its natural width,
+    scrolls inside its own container, and is cropped with a right-edge fade.
+  */
+  @media (max-width: 767.98px) {
+    .record {
+      --record-pad: var(--space-4);
+      overflow-x: auto;
+      scrollbar-width: none;
+      mask-image: linear-gradient(to right, black calc(100% - var(--space-7)), transparent);
+    }
+
+    .record::-webkit-scrollbar {
+      display: none;
+    }
+
+    .record__button {
+      font-size: var(--step-caption);
+      padding-right: calc(var(--record-pad) + var(--space-7));
+    }
+
+    .record__line[data-type='5'],
+    .record__line[data-type='6'] {
+      display: none;
+    }
+  }
+</style>

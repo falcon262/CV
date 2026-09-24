@@ -1,0 +1,51 @@
+---
+title: E-VAT middleware, Ghana Revenue Authority
+slug: e-vat
+order: 4
+outcome: Connects business ERP systems to the Ghana Revenue Authority so invoices are certified automatically and reliably.
+client: Ghana Revenue Authority integration
+role: Engineer
+stack: [".NET", "Hangfire", "SQL Server"]
+chips: [".NET", "Hangfire", "SQL Server"]
+tile: row
+draft: true
+---
+
+import KeyDecisions from '../../components/KeyDecisions.astro';
+
+## Context and the problem
+
+The Ghana Revenue Authority's E-VAT system certifies invoices, and private-sector businesses need their ERP systems connected to it. At PwC Ghana I worked as an engineer on middleware that makes that connection.
+
+Certification is a workflow of several steps, and any step can fail. Whatever happens, an invoice must not be lost or left in a state nobody can explain, and what the middleware records has to agree with what it tells other systems. Certification status also has to be followed up after an invoice is submitted, until the result is known.
+
+## What I did
+
+The middleware is built on four patterns:
+
+- a saga orchestrating the multi-step certification workflow
+- a transactional outbox, so records and published events stay consistent
+- retries with exponential backoff
+- scheduled polling for certification status
+
+It runs on .NET, with Hangfire and SQL Server.
+
+## Key decisions
+
+<KeyDecisions
+  items={[
+    {
+      decision: 'Orchestrate certification as a saga.',
+      why: "Each step can fail and be retried or compensated without losing the invoice’s state.",
+    },
+    {
+      decision: 'Use a transactional outbox.',
+      alternative: 'Writing to the database and publishing separately.',
+      why: 'The two can never disagree.',
+    },
+  ]}
+/>
+
+## Outcome
+
+Business ERP systems connect to the Ghana Revenue Authority through the middleware, and invoices are certified automatically and reliably. When a step fails, it is retried or compensated rather than lost.

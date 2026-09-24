@@ -1,0 +1,130 @@
+---
+import Diagram from './Diagram.astro';
+import { variantsFor, type DiagramContext, type DiagramLayouts } from '../../lib/diagram-variants';
+
+interface Props {
+  context: DiagramContext;
+  caption?: string;
+  framed?: boolean;
+  frameStyle?: string;
+}
+
+const { context, caption, framed, frameStyle } = Astro.props;
+
+const full =
+  'Broker onboarding leads to commission calculation, then the general ledger, then NACHA file generation, then the bank. The general ledger also feeds reports in PDF and Excel.';
+
+const nodes = {
+  onboarding: ['Broker', 'onboarding'],
+  calculation: ['Commission', 'calculation'],
+  ledger: ['General ledger'],
+  nacha: ['NACHA file', 'generation'],
+  bank: ['Bank'],
+  reports: ['Reports', '(PDF and Excel)'],
+};
+
+const layouts: DiagramLayouts = {
+  wide: {
+    columns: 5,
+    rows: 2,
+    boxWidth: 160,
+    boxHeight: 56,
+    gapX: 60,
+    gapY: 40,
+    description: full,
+    nodes: [
+      { id: 'onboarding', label: nodes.onboarding, col: 0, row: 0 },
+      { id: 'calculation', label: nodes.calculation, col: 1, row: 0 },
+      { id: 'ledger', label: nodes.ledger, col: 2, row: 0 },
+      { id: 'nacha', label: nodes.nacha, col: 3, row: 0 },
+      { id: 'bank', label: nodes.bank, col: 4, row: 0 },
+      { id: 'reports', label: nodes.reports, col: 2, row: 1 },
+    ],
+    edges: [
+      { from: 'onboarding', to: 'calculation' },
+      { from: 'calculation', to: 'ledger' },
+      { from: 'ledger', to: 'nacha' },
+      { from: 'nacha', to: 'bank' },
+      { from: 'ledger', to: 'reports' },
+    ],
+  },
+  medium: {
+    columns: 4,
+    rows: 2,
+    boxWidth: 136,
+    boxHeight: 56,
+    gapX: 36,
+    gapY: 36,
+    description: full,
+    nodes: [
+      { id: 'onboarding', label: nodes.onboarding, col: 0, row: 0 },
+      { id: 'calculation', label: nodes.calculation, col: 1, row: 0 },
+      { id: 'ledger', label: nodes.ledger, col: 2, row: 0 },
+      { id: 'nacha', label: nodes.nacha, col: 3, row: 0 },
+      { id: 'reports', label: nodes.reports, col: 2, row: 1 },
+      { id: 'bank', label: nodes.bank, col: 3, row: 1 },
+    ],
+    edges: [
+      { from: 'onboarding', to: 'calculation' },
+      { from: 'calculation', to: 'ledger' },
+      { from: 'ledger', to: 'nacha' },
+      { from: 'ledger', to: 'reports' },
+      { from: 'nacha', to: 'bank' },
+    ],
+  },
+  narrow: {
+    columns: 2,
+    rows: 5,
+    boxWidth: 150,
+    boxHeight: 56,
+    gapX: 20,
+    gapY: 24,
+    description: full,
+    nodes: [
+      { id: 'onboarding', label: nodes.onboarding, col: 0, row: 0 },
+      { id: 'calculation', label: nodes.calculation, col: 0, row: 1 },
+      { id: 'ledger', label: nodes.ledger, col: 0, row: 2 },
+      { id: 'nacha', label: nodes.nacha, col: 0, row: 3 },
+      { id: 'bank', label: nodes.bank, col: 0, row: 4 },
+      { id: 'reports', label: nodes.reports, col: 1, row: 2 },
+    ],
+    edges: [
+      { from: 'onboarding', to: 'calculation' },
+      { from: 'calculation', to: 'ledger' },
+      { from: 'ledger', to: 'nacha' },
+      { from: 'nacha', to: 'bank' },
+      { from: 'ledger', to: 'reports' },
+    ],
+  },
+  compact: {
+    columns: 2,
+    rows: 2,
+    boxWidth: 136,
+    boxHeight: 56,
+    gapX: 32,
+    gapY: 28,
+    description:
+      'Simplified: commission calculation feeds the general ledger, then NACHA file generation, then the bank.',
+    nodes: [
+      { id: 'calculation', label: nodes.calculation, col: 0, row: 0 },
+      { id: 'ledger', label: nodes.ledger, col: 1, row: 0 },
+      { id: 'nacha', label: nodes.nacha, col: 1, row: 1 },
+      { id: 'bank', label: nodes.bank, col: 0, row: 1 },
+    ],
+    edges: [
+      { from: 'calculation', to: 'ledger' },
+      { from: 'ledger', to: 'nacha' },
+      { from: 'nacha', to: 'bank' },
+    ],
+  },
+};
+---
+
+<Diagram
+  uid={`apl-${context}`}
+  title="APL Commissions Platform architecture"
+  variants={variantsFor(context, layouts)}
+  caption={caption}
+  framed={framed}
+  frameStyle={frameStyle}
+/>

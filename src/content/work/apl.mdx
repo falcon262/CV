@@ -1,0 +1,107 @@
+---
+title: APL Commissions Platform
+slug: apl
+order: 1
+outcome: A greenfield commissions platform covering the whole cycle from onboarding brokers to paying them, including a NACHA/ACH payment library built directly from the specification and a general ledger accounting subsystem.
+client: US insurance carrier
+role: Technical lead
+stack: [".NET 9", "React 18", "TypeScript", "SQL Server", "Hangfire", "QuestPDF", "ClosedXML", "ClickHouse"]
+chips: [".NET 9", "React", "SQL Server", "Hangfire"]
+tile: feature
+draft: true
+---
+
+import CodeBlock from '../../components/CodeBlock.astro';
+import KeyDecisions from '../../components/KeyDecisions.astro';
+
+export const entryDetailRecord = `
+// Illustrative, simplified from the production library.
+public enum TransactionCode
+{
+    CheckingCredit = 22,
+    CheckingDebit = 27,
+    SavingsCredit = 32,
+    SavingsDebit = 37,
+}
+
+// NACHA entry detail record (type 6): 94 characters.
+public sealed record EntryDetailRecord(
+    TransactionCode TransactionCode,
+    string ReceivingDfi,
+    char CheckDigit,
+    string AccountNumber,
+    long AmountInCents,
+    string IndividualId,
+    string IndividualName,
+    bool HasAddenda,
+    string TraceNumber)
+{
+    public string ToLine() => string.Concat(
+        "6",                                    // 01 record type
+        ((int)TransactionCode).ToString("D2"),  // 02-03
+        ReceivingDfi,                           // 04-11
+        CheckDigit.ToString(),                  // 12
+        AccountNumber.PadRight(17),             // 13-29
+        AmountInCents.ToString("D10"),          // 30-39
+        IndividualId.PadRight(15),              // 40-54
+        IndividualName.PadRight(22),            // 55-76
+        "  ",                                   // 77-78
+        HasAddenda ? "1" : "0",                 // 79
+        TraceNumber);                           // 80-94
+}
+`;
+
+## Context
+
+A US insurance carrier needed a commissions platform built from scratch, covering the whole commission lifecycle from onboarding a broker to paying them by ACH. I was the technical lead. The platform spans 44 business domains and more than 75 REST APIs, with a .NET 9 API behind a React front end.
+
+## The problem
+
+Commission money passes through several stages before it reaches a broker. It is calculated, recorded in the accounts and then paid, and each stage has to agree with the one before it.
+
+Payment is the least forgiving stage. The bank validates every ACH file against the NACHA specification, so a file has to match that specification exactly: every record, every field and every control total.
+
+## What I did
+
+I built the NACHA/ACH payment file library directly from the NACHA specification. The library follows the specification record by record and field by field, so every line of a generated file can be checked against the document the bank uses.
+
+<CodeBlock
+  id="nacha-entry-detail"
+  lang="csharp"
+  code={entryDetailRecord}
+  caption="Illustrative, simplified from the production library"
+/>
+
+I built the general ledger accounting subsystem, so commission activity is recorded in the accounts on its way from calculation to a payment file.
+
+I introduced a modular OpenAPI specification strategy with automated TypeScript client generation. The React front end talks to the .NET API through generated, type-safe clients rather than hand-written ones.
+
+I designed a reusable three-layer report architecture: a controller, a rendering service and a data service, with QuestPDF for PDF output and ClosedXML for Excel. The same pattern was later reused successfully on a second platform.
+
+Background processing runs on Hangfire, and I integrated ClickHouse for commission calculations.
+
+## Key decisions
+
+<KeyDecisions
+  items={[
+    {
+      decision: 'Build the NACHA/ACH file library from the specification.',
+      alternative: 'A third-party library.',
+      why: 'Every record, field and control total could be checked line by line against the specification the bank validates against.',
+    },
+    {
+      decision: 'A modular OpenAPI specification with generated TypeScript clients.',
+      alternative: 'Hand-written API clients.',
+      why: 'The React front end stays type-safe as the API grows.',
+    },
+    {
+      decision: 'A reusable three-layer report architecture.',
+      alternative: 'Report logic inside controllers.',
+      why: 'Rendering and data access could change independently, and the pattern was reused on a second platform.',
+    },
+  ]}
+/>
+
+## Outcome
+
+The carrier has one greenfield platform for the whole commission cycle, from broker onboarding to ACH payment. Payment files come from a library built against the NACHA specification itself, commission activity runs through a general ledger accounting subsystem, and the front end stays in step with the API through generated clients. The report architecture proved general enough to be reused on a second platform.

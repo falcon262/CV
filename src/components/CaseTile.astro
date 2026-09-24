@@ -1,0 +1,199 @@
+---
+/**
+ * One case study on the home page. The whole tile is a single link (the title's
+ * link is stretched over the tile), so its accessible name is just the title.
+ * Variants: feature (APL), pair (ECOBUD, AI reporting engine), row (E-VAT, IFRS).
+ */
+import type { CollectionEntry } from 'astro:content';
+import { diagramFor } from '../lib/diagrams';
+import { url } from '../lib/url';
+
+interface Props {
+  entry: CollectionEntry<'work'>;
+}
+
+const { entry } = Astro.props;
+const { title, outcome, client, role, chips, tile, slug } = entry.data;
+const Diagram = diagramFor(slug).component;
+---
+
+<article class:list={['tile', `tile--${tile}`]}>
+  <div class="tile__text">
+    <h3 class="tile__title" style={`view-transition-name: work-${slug}-title`}>
+      <a class="tile__link" href={url(`work/${slug}/`)}><span class="tile__title-text">{title}</span></a>
+    </h3>
+    <p class="tile__outcome">{outcome}</p>
+    <dl class="tile__meta">
+      <div>
+        <dt>Client</dt>
+        <dd>{client}</dd>
+      </div>
+      <div>
+        <dt>Role</dt>
+        <dd>{role}</dd>
+      </div>
+    </dl>
+    <ul class="chips" role="list" aria-label="Stack">
+      {chips.map((chip) => <li>{chip}</li>)}
+    </ul>
+  </div>
+  <div class="tile__media" style={`view-transition-name: work-${slug}-media`}>
+    <Diagram context={tile} />
+  </div>
+</article>
+
+<style>
+  .tile {
+    position: relative;
+    display: grid;
+    gap: var(--space-5);
+    align-content: start;
+  }
+
+  .tile__text {
+    display: grid;
+    gap: var(--space-4);
+    align-content: start;
+  }
+
+  .tile__title {
+    font-size: var(--step-h3);
+    line-height: var(--lh-h3);
+  }
+
+  .tile__link {
+    color: var(--color-ink);
+    text-decoration: none;
+  }
+
+  /* Stretch the title link over the whole tile. */
+  .tile__link::after {
+    content: '';
+    position: absolute;
+    inset: calc(-1 * var(--space-3));
+    border-radius: var(--radius-md);
+  }
+
+  .tile__link:focus-visible {
+    outline: none;
+  }
+
+  .tile__link:focus-visible::after {
+    outline: var(--focus-ring) solid var(--color-brand);
+    outline-offset: 0;
+  }
+
+  /* The title underline draws left to right on hover and keyboard focus. */
+  .tile__title-text {
+    background-image: linear-gradient(var(--color-brand), var(--color-brand));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0% var(--hairline);
+    padding-bottom: 0.08em;
+    transition: background-size var(--dur-base) var(--ease-standard);
+  }
+
+  .tile__outcome {
+    max-width: var(--measure);
+    color: var(--color-ink);
+  }
+
+  .tile__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-6);
+    font-size: var(--step-small);
+    line-height: var(--lh-small);
+  }
+
+  .tile__meta div {
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  .tile__meta dt {
+    color: var(--color-ink-muted);
+  }
+
+  .tile__meta dd {
+    color: var(--color-ink);
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    list-style: none;
+  }
+
+  .chips li {
+    padding: var(--space-1) var(--space-2);
+    border: var(--hairline) solid var(--color-rule);
+    border-radius: var(--radius-sm);
+    font-size: var(--step-caption);
+    line-height: var(--lh-caption);
+    color: var(--color-ink-muted);
+  }
+
+  .tile__media {
+    padding: var(--space-5);
+    border: var(--hairline) solid var(--color-rule);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    transition: transform var(--dur-base) var(--ease-standard);
+  }
+
+  /* Hover (only where hover exists) and focus-visible: underline draws, media lifts 4px. Nothing else moves. */
+  @media (hover: hover) {
+    .tile:hover .tile__title-text {
+      background-size: 100% var(--hairline);
+    }
+
+    .tile:hover .tile__media {
+      transform: translateY(-4px);
+    }
+  }
+
+  .tile:has(.tile__link:focus-visible) .tile__title-text {
+    background-size: 100% var(--hairline);
+  }
+
+  .tile:has(.tile__link:focus-visible) .tile__media {
+    transform: translateY(-4px);
+  }
+
+  /* Feature tile: full width, media on the right at desktop, below the text otherwise. */
+  .tile--feature .tile__outcome {
+    font-size: var(--step-body-lg);
+  }
+
+  @media (min-width: 1280px) {
+    .tile--feature {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--gutter);
+      align-items: center;
+    }
+
+    .tile--feature .tile__text {
+      grid-column: 1 / span 5;
+    }
+
+    .tile--feature .tile__media {
+      grid-column: 6 / span 7;
+    }
+  }
+
+  /* Row tile: text-led, with a small thumbnail. */
+  .tile--row .tile__media {
+    justify-self: start;
+    padding: var(--space-4);
+  }
+
+  @media (min-width: 768px) {
+    .tile--row {
+      grid-template-columns: minmax(0, 1fr) auto;
+      column-gap: var(--space-7);
+      align-items: start;
+    }
+  }
+</style>

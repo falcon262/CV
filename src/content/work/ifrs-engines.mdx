@@ -1,0 +1,33 @@
+---
+title: IFRS 9 and IFRS 16 engines
+slug: ifrs-engines
+order: 5
+outcome: Replaced manual regulatory calculations with automated engines for expected credit loss impairment and lease accounting.
+client: Consolidated Bank Ghana, Fidelity Bank Ghana
+role: Engineer
+stack: [".NET", "ABP Framework", "Angular", "SQL Server"]
+chips: [".NET", "Angular", "SQL Server"]
+tile: row
+draft: true
+---
+
+## Context and the problem
+
+IFRS 9 and IFRS 16 are accounting standards with regulatory weight. IFRS 9 asks banks to account for expected credit loss on their lending, and IFRS 16 changes how leases are accounted for, down to the amortisation schedule for each lease.
+
+At Consolidated Bank Ghana and Fidelity Bank Ghana these regulatory calculations were done manually. At PwC Ghana I worked as an engineer on the automation that replaced them.
+
+## What I did
+
+The work covers two engines:
+
+- an IFRS 9 impairment engine computing expected credit loss, supported by probability-of-default calibration validation reporting
+- an IFRS 16 lease accounting engine producing lease amortisation schedules
+
+Probability-of-default estimates sit underneath expected credit loss, so the IFRS 9 engine comes with reporting that validates how well those estimates are calibrated. On the IFRS 16 side, every lease needs its own amortisation schedule, and the engine produces them.
+
+Both are built on .NET with ABP Framework, with an Angular front end and SQL Server, as regulatory compliance automation for the two banks.
+
+## Outcome
+
+Manual regulatory calculations were replaced with automated, repeatable engines: expected credit loss impairment under IFRS 9, and lease accounting under IFRS 16. The same inputs produce the same results every time, and the probability-of-default calibration can be checked through its own validation reporting.

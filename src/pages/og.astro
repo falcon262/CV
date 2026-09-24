@@ -1,0 +1,114 @@
+---
+/**
+ * Open Graph capture page (1200 by 630). Not for people: noindex, excluded from
+ * the sitemap, and screenshotted by `npm run og` into public/og.png.
+ */
+import '../styles/tokens.css';
+import { fontFaceCss } from '../lib/fonts';
+import { records, segments } from '../data/record';
+
+const slice = records.filter((record) => record.type === '1' || record.type === '9');
+---
+
+<!doctype html>
+<html lang="en-GB" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1200" />
+    <meta name="robots" content="noindex" />
+    <title>Open Graph image</title>
+    <style is:inline set:html={fontFaceCss}></style>
+  </head>
+  <body>
+    <main class="og">
+      <div class="og__record" aria-hidden="true">
+        {
+          slice.map((record) => (
+            <span class="og__line">
+              {segments(record).map((segment) =>
+                segment.field ? (
+                  <span class:list={['og__field', { 'og__field--balanced': segment.field === 'balanced' }]}>
+                    {segment.text}
+                  </span>
+                ) : (
+                  segment.text
+                ),
+              )}
+            </span>
+          ))
+        }
+      </div>
+      <p class="og__headline">I build software that has to balance.</p>
+      <p class="og__name">Joseph Kofi Asante</p>
+    </main>
+  </body>
+</html>
+
+<style>
+  :global(html),
+  :global(body) {
+    margin: 0;
+    background: var(--color-paper);
+  }
+
+  .og {
+    box-sizing: border-box;
+    display: grid;
+    align-content: space-between;
+    width: 1200px;
+    height: 630px;
+    padding: var(--space-8) var(--space-8) var(--space-7);
+    overflow: hidden;
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-display);
+  }
+
+  /* A cropped slice of records 1 and 9, fading out at the right edge. */
+  .og__record {
+    display: grid;
+    width: calc(100% + var(--space-8));
+    padding: var(--space-4) var(--space-5);
+    border: 1px solid var(--color-rule);
+    border-right: 0;
+    border-radius: var(--radius-md) 0 0 var(--radius-md);
+    background: var(--color-surface);
+    color: var(--color-ink-muted);
+    font-family: var(--font-mono);
+    font-size: 20px;
+    font-weight: var(--weight-medium);
+    line-height: 2;
+    white-space: pre;
+    mask-image: linear-gradient(to right, black 70%, transparent);
+  }
+
+  .og__line + .og__line {
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .og__field {
+    color: var(--color-ink);
+    text-decoration: underline 1px var(--color-brand);
+    text-underline-offset: 0.3em;
+  }
+
+  .og__field--balanced {
+    color: var(--color-settled);
+  }
+
+  .og__headline {
+    margin: 0;
+    max-width: 16ch;
+    font-size: 84px;
+    font-weight: var(--weight-bold);
+    line-height: var(--lh-display);
+    letter-spacing: var(--tracking-display);
+  }
+
+  .og__name {
+    margin: 0;
+    font-size: var(--step-h3);
+    font-weight: var(--weight-bold);
+    color: var(--color-ink-muted);
+  }
+</style>

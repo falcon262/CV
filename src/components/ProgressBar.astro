@@ -1,0 +1,54 @@
+---
+/**
+ * Reading progress on case studies: 2px, brand, fixed at the top.
+ * A scroll-driven animation where supported; otherwise a tiny script
+ * sets --progress. Decorative, so hidden from assistive technology.
+ */
+---
+
+<div class="progress" aria-hidden="true">
+  <div class="progress__bar" data-progress></div>
+</div>
+
+<script>
+  import '../scripts/progress';
+</script>
+
+<style>
+  .progress {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 60;
+    height: var(--focus-ring);
+    pointer-events: none;
+  }
+
+  .progress__bar {
+    height: 100%;
+    background: var(--color-brand);
+    transform-origin: left center;
+    transform: scaleX(var(--progress, 0));
+  }
+
+  @supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .progress__bar {
+        --progress-timeline: scroll(root block);
+        animation: progress-grow linear both;
+        /* Via a custom property, so the CSS minifier cannot fold the timeline into the
+           animation shorthand (which browsers reject). */
+        animation-timeline: var(--progress-timeline);
+      }
+    }
+  }
+
+  @keyframes progress-grow {
+    from {
+      transform: scaleX(0);
+    }
+
+    to {
+      transform: scaleX(1);
+    }
+  }
+</style>

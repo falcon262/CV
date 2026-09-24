@@ -1,0 +1,107 @@
+---
+import Diagram from './Diagram.astro';
+import { variantsFor, type DiagramContext, type DiagramLayouts } from '../../lib/diagram-variants';
+
+interface Props {
+  context: DiagramContext;
+  caption?: string;
+  framed?: boolean;
+  frameStyle?: string;
+}
+
+const { context, caption, framed, frameStyle } = Astro.props;
+
+const full =
+  'Budget planning in UA and USD goes to a four-level approval, then becomes the approved budget. SAP expenditure data goes to variance analysis, then to reports. Sign-in is via Active Directory.';
+
+const nodes = {
+  planning: ['Budget planning', '(UA and USD)'],
+  approval: ['Four-level', 'approval'],
+  approved: ['Approved budget'],
+  sap: ['SAP expenditure', 'data'],
+  variance: ['Variance analysis'],
+  reports: ['Reports'],
+};
+
+const signIn = ['Sign-in via Active Directory'];
+
+const layouts: DiagramLayouts = {
+  medium: {
+    columns: 3,
+    rows: 3,
+    boxWidth: 168,
+    boxHeight: 56,
+    gapX: 44,
+    gapY: 32,
+    description: full,
+    nodes: [
+      { id: 'planning', label: nodes.planning, col: 0, row: 0 },
+      { id: 'approval', label: nodes.approval, col: 1, row: 0 },
+      { id: 'approved', label: nodes.approved, col: 2, row: 0 },
+      { id: 'sap', label: nodes.sap, col: 0, row: 1 },
+      { id: 'variance', label: nodes.variance, col: 1, row: 1 },
+      { id: 'reports', label: nodes.reports, col: 2, row: 1 },
+    ],
+    edges: [
+      { from: 'planning', to: 'approval' },
+      { from: 'approval', to: 'approved' },
+      { from: 'sap', to: 'variance' },
+      { from: 'variance', to: 'reports' },
+    ],
+    notes: [{ lines: signIn, col: 0, row: 2, span: 2 }],
+  },
+  narrow: {
+    columns: 2,
+    rows: 4,
+    boxWidth: 150,
+    boxHeight: 56,
+    gapX: 20,
+    gapY: 28,
+    description: full,
+    nodes: [
+      { id: 'planning', label: nodes.planning, col: 0, row: 0 },
+      { id: 'approval', label: nodes.approval, col: 0, row: 1 },
+      { id: 'approved', label: nodes.approved, col: 0, row: 2 },
+      { id: 'sap', label: nodes.sap, col: 1, row: 0 },
+      { id: 'variance', label: nodes.variance, col: 1, row: 1 },
+      { id: 'reports', label: nodes.reports, col: 1, row: 2 },
+    ],
+    edges: [
+      { from: 'planning', to: 'approval' },
+      { from: 'approval', to: 'approved' },
+      { from: 'sap', to: 'variance' },
+      { from: 'variance', to: 'reports' },
+    ],
+    notes: [{ lines: signIn, col: 0, row: 3, span: 2 }],
+  },
+  compact: {
+    columns: 2,
+    rows: 2,
+    boxWidth: 136,
+    boxHeight: 56,
+    gapX: 32,
+    gapY: 28,
+    description:
+      'Simplified: budget planning goes to a four-level approval, and SAP expenditure data goes to variance analysis.',
+    nodes: [
+      { id: 'planning', label: ['Budget', 'planning'], col: 0, row: 0 },
+      { id: 'approval', label: nodes.approval, col: 1, row: 0 },
+      { id: 'sap', label: nodes.sap, col: 0, row: 1 },
+      { id: 'variance', label: ['Variance', 'analysis'], col: 1, row: 1 },
+    ],
+    edges: [
+      { from: 'planning', to: 'approval' },
+      { from: 'sap', to: 'variance' },
+    ],
+  },
+};
+---
+
+<Diagram
+  uid={`ecobud-${context}`}
+  title="ECOBUD architecture"
+  variants={variantsFor(context, layouts)}
+  caption={caption}
+  framed={framed}
+  frameStyle={frameStyle}
+/>

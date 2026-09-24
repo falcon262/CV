@@ -1,0 +1,377 @@
+---
+/**
+ * Printable CV, A4. Not for people browsing the site: noindex, excluded from the
+ * sitemap, and printed by `npm run cv` to public/cv/Joseph-Kofi-Asante-CV.pdf.
+ * Wording comes from src/data/cv.ts; titles, dates, contact details, tools and
+ * credentials come from the same data files as the site.
+ */
+import '../styles/tokens.css';
+import { printFontFaceCss } from '../lib/fonts';
+import { site } from '../data/site';
+import { experience } from '../data/experience';
+import { toolGroups } from '../data/skills';
+import { credentials } from '../data/credentials';
+import { cv } from '../data/cv';
+import { absoluteUrl } from '../lib/url';
+
+const portfolio = absoluteUrl('', Astro.site);
+/** Links print as bare addresses, so they still work on paper. */
+const bare = (href: string) => href.replace(/^https:\/\/(www\.)?/, '').replace(/\/$/, '');
+
+const contacts = [
+  { href: `mailto:${site.email}`, text: site.email },
+  { href: portfolio, text: bare(portfolio) },
+  { href: site.links.linkedin, text: bare(site.links.linkedin) },
+  { href: site.links.github, text: bare(site.links.github) },
+];
+
+const roles = experience.map((role) => {
+  const detail = cv.roles.find((entry) => entry.company === role.company);
+  if (!detail) throw new Error(`src/data/cv.ts has no CV points for ${role.company}.`);
+  return { ...role, points: detail.points, stack: detail.stack };
+});
+
+// The footer lives in @page margin boxes, which cannot read the document. Page 1 has
+// none, so the name is the first text a parser meets.
+const pageCss = `@page{@bottom-left{content:${JSON.stringify(`${site.name}, ${site.email}`)}}}`;
+---
+
+<!doctype html>
+<html lang="en-GB" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <meta name="author" content={site.name} />
+    <title>{`${site.name}, CV`}</title>
+    <style is:inline set:html={printFontFaceCss + pageCss}></style>
+  </head>
+  <body>
+    <main class="cv">
+      <header class="cv-header">
+        <div class="cv-header__who">
+          <h1 class="cv-header__name">{site.name}</h1>
+          <p class="cv-header__headline">{cv.headline}</p>
+          {cv.availability.map((line) => <p class="cv-header__availability">{line}</p>)}
+        </div>
+        <ul class="cv-header__contacts" role="list">
+          {
+            contacts.map((contact) => (
+              <li>
+                <a href={contact.href}>{contact.text}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </header>
+
+      <section class="cv-section" aria-labelledby="cv-profile">
+        <h2 id="cv-profile" class="cv-section__title">Profile</h2>
+        <p>{cv.profile}</p>
+      </section>
+
+      <section class="cv-section" aria-labelledby="cv-experience">
+        <h2 id="cv-experience" class="cv-section__title">Experience</h2>
+        {
+          roles.map((role) => (
+            <article class="cv-entry">
+              <div class="cv-entry__head">
+                <h3 class="cv-entry__title">{role.title}</h3>
+                <p class="cv-entry__aside">{role.dates}</p>
+                <p class="cv-entry__org">{role.company}</p>
+                <p class="cv-entry__aside">{role.location}</p>
+              </div>
+              <ul class="cv-entry__points" role="list">
+                {role.points.map((point) => (
+                  <li>{point}</li>
+                ))}
+              </ul>
+              {role.stack && (
+                <p class="cv-entry__stack">
+                  <span class="cv-entry__label">Stack:</span> {role.stack.join(', ')}
+                </p>
+              )}
+            </article>
+          ))
+        }
+      </section>
+
+      <section class="cv-section" aria-labelledby="cv-project">
+        <h2 id="cv-project" class="cv-section__title">Selected project</h2>
+        <article class="cv-entry">
+          <div class="cv-entry__head">
+            <h3 class="cv-entry__title">{cv.project.title}</h3>
+            <p class="cv-entry__aside">{cv.project.role}</p>
+          </div>
+          <p class="cv-entry__summary">{cv.project.summary}</p>
+          <ul class="cv-entry__points" role="list">
+            {cv.project.points.map((point) => <li>{point}</li>)}
+          </ul>
+          <p class="cv-entry__stack">
+            <span class="cv-entry__label">Stack:</span> {cv.project.stack.join(', ')}
+          </p>
+        </article>
+      </section>
+
+      <section class="cv-section" aria-labelledby="cv-skills">
+        <h2 id="cv-skills" class="cv-section__title">Skills</h2>
+        <dl class="cv-skills">
+          {
+            toolGroups.map((group) => (
+              <div class="cv-skills__row">
+                <dt>{group.title}</dt>
+                <dd>{group.items.join(', ')}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </section>
+
+      <section class="cv-section" aria-labelledby="cv-credentials">
+        <h2 id="cv-credentials" class="cv-section__title">Education and certifications</h2>
+        <ul class="cv-credentials" role="list">
+          {
+            credentials.map((credential) => (
+              <li class="cv-credentials__row">
+                <p>
+                  {credential.title}
+                  {credential.detail && <span class="cv-credentials__detail">, {credential.detail}</span>}
+                </p>
+                <p class:list={['cv-entry__aside', { 'cv-credentials__status': credential.status }]}>
+                  {credential.when}
+                </p>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <section class="cv-section" aria-labelledby="cv-earlier">
+        <h2 id="cv-earlier" class="cv-section__title">Before enterprise software</h2>
+        <p>{cv.earlierWork}</p>
+        <p class="cv-earlier__talk">{cv.talk}</p>
+      </section>
+    </main>
+  </body>
+</html>
+
+<style>
+  /* A4. From page 2, a quiet footer: name and email on the left, page count on the right. */
+  @page {
+    size: A4;
+    margin: var(--space-7);
+
+    @bottom-left {
+      font-family: var(--font-display);
+      font-size: var(--step-caption);
+      font-weight: var(--weight-medium);
+      color: var(--color-ink-muted);
+    }
+
+    @bottom-right {
+      content: 'Page ' counter(page) ' of ' counter(pages);
+      font-family: var(--font-display);
+      font-size: var(--step-caption);
+      font-weight: var(--weight-medium);
+      color: var(--color-ink-muted);
+    }
+  }
+
+  @page :first {
+    @bottom-left {
+      content: none;
+    }
+
+    @bottom-right {
+      content: none;
+    }
+  }
+
+  :global(*),
+  :global(*::before),
+  :global(*::after) {
+    box-sizing: border-box;
+  }
+
+  :global(html) {
+    background: var(--color-surface);
+    print-color-adjust: exact;
+  }
+
+  :global(body) {
+    margin: 0;
+  }
+
+  .cv {
+    color: var(--color-ink);
+    font-family: var(--font-display);
+    font-size: var(--step-small);
+    font-weight: var(--weight-medium);
+    line-height: var(--lh-caption);
+  }
+
+  .cv :where(h1, h2, h3, p, ul, dl, dd) {
+    margin: 0;
+    padding: 0;
+  }
+
+  .cv a {
+    color: var(--color-brand);
+    text-decoration: none;
+  }
+
+  /* Header: who on the left, how to reach him on the right. */
+  .cv-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: var(--space-5);
+    align-items: end;
+  }
+
+  .cv-header__name {
+    font-size: var(--step-h2);
+    font-weight: var(--weight-bold);
+    line-height: var(--lh-h2);
+    letter-spacing: var(--tracking-display);
+  }
+
+  .cv-header__headline {
+    margin-top: var(--space-1);
+    font-size: var(--step-body);
+    font-weight: var(--weight-bold);
+  }
+
+  .cv-header__availability {
+    color: var(--color-ink-muted);
+  }
+
+  .cv-header__contacts {
+    list-style: none;
+    text-align: right;
+  }
+
+  /* Sections */
+  .cv-section {
+    margin-top: var(--space-4);
+  }
+
+  .cv-section__title {
+    margin-bottom: var(--space-2);
+    padding-bottom: var(--space-1);
+    border-bottom: var(--hairline) solid var(--color-rule);
+    font-size: var(--step-body);
+    font-weight: var(--weight-bold);
+    line-height: var(--lh-h3);
+    break-after: avoid;
+  }
+
+  .cv-section > p + p {
+    margin-top: var(--space-2);
+  }
+
+  /* Roles and the selected project */
+  .cv-entry + .cv-entry {
+    margin-top: var(--space-4);
+  }
+
+  .cv-entry__head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: var(--space-5);
+    break-after: avoid;
+  }
+
+  .cv-entry__title {
+    font-size: var(--step-small);
+    font-weight: var(--weight-bold);
+    line-height: var(--lh-caption);
+  }
+
+  .cv-entry__aside {
+    color: var(--color-ink-muted);
+    text-align: right;
+  }
+
+  .cv-entry__summary {
+    margin-top: var(--space-1);
+  }
+
+  .cv-entry__points {
+    display: grid;
+    gap: var(--space-1);
+    margin-top: var(--space-2);
+    list-style: none;
+  }
+
+  /*
+    A short brand rule marks each point: no bullet glyphs, no middle dots. Grid, not
+    absolute positioning, so the PDF's text runs in reading order.
+  */
+  .cv-entry__points li {
+    display: grid;
+    grid-template-columns: var(--space-4) minmax(0, 1fr);
+    break-inside: avoid;
+  }
+
+  .cv-entry__points li::before {
+    content: '';
+    width: var(--space-2);
+    margin-top: 0.77em;
+    border-top: var(--hairline) solid var(--color-brand);
+  }
+
+  .cv-entry__stack {
+    margin-top: var(--space-2);
+    color: var(--color-ink-muted);
+  }
+
+  .cv-entry__label {
+    color: var(--color-ink);
+    font-weight: var(--weight-bold);
+  }
+
+  /* Skills */
+  .cv-skills {
+    display: grid;
+    gap: var(--space-1);
+    break-inside: avoid;
+  }
+
+  .cv-skills :where(dt, dd) {
+    display: inline;
+  }
+
+  .cv-skills dt {
+    font-weight: var(--weight-bold);
+  }
+
+  .cv-skills dt::after {
+    content: ': ';
+  }
+
+  /* Education and certifications */
+  .cv-credentials {
+    display: grid;
+    gap: var(--space-1);
+    list-style: none;
+  }
+
+  .cv-credentials__row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: var(--space-5);
+    break-inside: avoid;
+  }
+
+  .cv-credentials__detail {
+    color: var(--color-ink-muted);
+  }
+
+  .cv-credentials__status {
+    color: var(--color-settled);
+  }
+
+  .cv-earlier__talk {
+    color: var(--color-ink-muted);
+  }
+</style>

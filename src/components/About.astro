@@ -1,0 +1,130 @@
+---
+import { Picture } from 'astro:assets';
+import portrait from '../assets/portrait.jpg';
+
+const principles = [
+  {
+    title: 'Settle arguments with data.',
+    text: 'When a design decision is contested, I look at the live data before choosing.',
+  },
+  {
+    title: 'Build from the spec.',
+    text: "Payment files, tax integrations and accounting rules get implemented against the source document, not someone’s summary of it.",
+  },
+  {
+    title: 'Keep secrets out of the data path.',
+    text: "Reports and integrations should run in production without anyone handling credentials they don’t need.",
+  },
+];
+---
+
+<section class="section about" id="about" aria-labelledby="about-title">
+  <div class="container">
+    <h2 id="about-title" class="section__title">About</h2>
+    <div class="about__intro">
+      <Picture
+        class="about__portrait"
+        src={portrait}
+        alt="Joseph Kofi Asante"
+        width={320}
+        height={320}
+        widths={[320, 640]}
+        sizes="320px"
+        formats={['avif', 'webp']}
+        loading="lazy"
+        decoding="async"
+      />
+      <div class="about__text">
+        <p>
+          I’m Joseph, a senior software engineer in Accra, Ghana. Most of what I’ve built sits where software meets
+          money or regulation: commission payments for a US insurer, a budget system for the ECOWAS Parliament, VAT
+          certification for Ghana’s revenue authority, and impairment and lease engines for two Ghanaian banks. The
+          part of the job I enjoy most is turning a specification, a regulation or a messy dataset into something a
+          finance team trusts.
+        </p>
+        <p>
+          I lead a team of eight at TechHalo Labs and stay hands-on, from design through to live release. Before
+          enterprise software I built games and VR in Unity, which is where I learned to care about performance and
+          about what a person actually sees on screen.
+        </p>
+      </div>
+    </div>
+
+    <ul class="principles" role="list">
+      {
+        principles.map((principle) => (
+          <li class="principle">
+            <h3 class="principle__title">{principle.title}</h3>
+            <p>{principle.text}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .about__intro {
+    display: grid;
+    gap: var(--space-6);
+    align-items: start;
+  }
+
+  .about__intro :global(picture) {
+    display: block;
+    width: min(320px, 100%);
+  }
+
+  .about__intro :global(img) {
+    width: min(320px, 100%);
+    height: auto;
+    aspect-ratio: 1;
+    border: var(--hairline) solid var(--color-rule);
+    border-radius: var(--radius-full);
+    object-fit: cover;
+  }
+
+  .about__text {
+    display: grid;
+    gap: var(--space-4);
+    max-width: var(--measure-about);
+    font-size: var(--step-body-lg);
+  }
+
+  @media (min-width: 1024px) {
+    .about__intro {
+      grid-template-columns: 320px minmax(0, 1fr);
+      column-gap: var(--space-8);
+    }
+  }
+
+  .principles {
+    display: grid;
+    gap: var(--space-6) var(--gutter);
+    margin-top: var(--space-8);
+    padding-top: var(--space-7);
+    border-top: var(--hairline) solid var(--color-rule);
+    list-style: none;
+  }
+
+  @media (min-width: 768px) {
+    .principles {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .principle {
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+  }
+
+  .principle__title {
+    font-size: var(--step-body);
+    line-height: var(--lh-body);
+  }
+
+  .principle p {
+    color: var(--color-ink-muted);
+  }
+</style>

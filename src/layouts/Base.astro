@@ -1,0 +1,83 @@
+---
+import '../styles/tokens.css';
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { fontFaceCss, preloadFont } from '../lib/fonts';
+import { absoluteUrl, url } from '../lib/url';
+import { site } from '../data/site';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Site-relative path of this page, for example '' or 'work/apl/'. */
+  path: string;
+  ogType?: 'website' | 'article';
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown>;
+  mainClass?: string;
+}
+
+const { title, description, path, ogType = 'website', noindex = false, jsonLd, mainClass } = Astro.props;
+const canonical = absoluteUrl(path, Astro.site);
+const ogImage = absoluteUrl('og.png', Astro.site);
+---
+
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+
+    <script is:inline>
+      // Before first paint: mark JS as available and apply a stored theme, so there is no flash.
+      (function () {
+        var root = document.documentElement;
+        root.classList.add('js');
+        try {
+          var theme = localStorage.getItem('theme');
+          if (theme === 'light' || theme === 'dark') root.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script>
+
+    <link rel="preload" href={preloadFont} as="font" type="font/woff2" crossorigin />
+    <style is:inline set:html={fontFaceCss}></style>
+
+    <link rel="icon" href={url('favicon.png')} type="image/png" sizes="32x32" />
+    <link rel="icon" href={url('favicon.svg')} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={url('apple-touch-icon.png')} />
+    <link rel="sitemap" href={url('sitemap-index.xml')} />
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Joseph Kofi Asante: I build software that has to balance." />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header />
+    <main id="main" tabindex="-1" class={mainClass}>
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<style>
+  main:focus {
+    outline: none;
+  }
+</style>

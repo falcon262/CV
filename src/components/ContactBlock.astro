@@ -1,0 +1,69 @@
+---
+import { site } from '../data/site';
+import { url } from '../lib/url';
+
+const [emailUser, emailDomain] = site.email.split('@');
+---
+
+<section class="section contact" id="contact" aria-labelledby="contact-title">
+  <div class="container">
+    <h2 id="contact-title" class="section__title">Get in touch</h2>
+    <p class="contact__lead">Email is the quickest way to reach me.</p>
+    <div class="contact__email">
+      <a class="contact__address" href={`mailto:${site.email}`} id="contact-email">{emailUser}@<wbr />{emailDomain}</a>
+      <button
+        class="btn btn--secondary btn--small copy-button"
+        type="button"
+        data-copy={site.email}
+        data-copy-select="#contact-email"
+        data-copy-status="#contact-status"
+        data-copy-announce="Email copied"
+      >
+        <svg class="copy-button__check" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false">
+          <path d="M2.25 6.4 4.9 9 9.75 3.25"></path>
+        </svg>
+        <span data-copy-label>Copy email</span>
+      </button>
+    </div>
+    <ul class="contact__links" role="list">
+      <li><a href={site.links.linkedin}>LinkedIn</a></li>
+      <li><a href={site.links.github}>GitHub</a></li>
+      <li><a href={url(site.cvPath)} download>Download CV</a></li>
+    </ul>
+    <p class="visually-hidden" id="contact-status" aria-live="polite"></p>
+  </div>
+</section>
+
+<script>
+  import '../scripts/copy';
+</script>
+
+<style>
+  .contact__lead {
+    font-size: var(--step-body-lg);
+    color: var(--color-ink-muted);
+  }
+
+  .contact__email {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4) var(--space-5);
+    margin-top: var(--space-4);
+  }
+
+  .contact__address {
+    font-size: var(--step-h2);
+    line-height: var(--lh-h2);
+    font-weight: var(--weight-bold);
+  }
+
+  .contact__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3) var(--space-6);
+    margin-top: var(--space-6);
+    list-style: none;
+  }
+
+</style>

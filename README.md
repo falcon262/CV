@@ -1,2 +1,164 @@
-# CV
-Access my CV here: https://falcon262.github.io/CV/index.html
+# Joseph Kofi Asante, portfolio
+
+The portfolio of Joseph Kofi Asante, senior .NET engineer and technical lead, served at
+**https://falcon262.github.io/CV/**. It is a static [Astro](https://astro.build) 7 site with
+plain CSS, no UI framework and about 2 KB of client JavaScript, deployed to GitHub Pages by
+GitHub Actions.
+
+- The full specification, including every content rule, is [`docs/brief.md`](docs/brief.md).
+- Standing rules for anyone (or any agent) editing the site are in [`CLAUDE.md`](CLAUDE.md).
+- Every screenshot review is logged in [`docs/review-log.md`](docs/review-log.md).
+- The previous hand-written site is preserved on the `legacy-v1` branch.
+
+## Getting started
+
+You need Node.js 22.12 or later.
+
+```sh
+npm ci
+npm run dev        # http://localhost:4321/CV/
+```
+
+The site lives under `/CV/` because it is a GitHub Pages project site. Build every internal
+link with `url()` from `src/lib/url.ts`; never hard-code a leading `/`.
+
+## npm scripts
+
+| Script | What it does |
+|---|---|
+| `npm run dev` | Local development server. |
+| `npm run build` | Builds the static site into `dist/`. |
+| `npm run preview` | Serves `dist/` locally. |
+| `npm run check` | `astro check` plus the content guard (`scripts/check-content.mjs`): no em dashes, arrows or middle dots, no blocked terms, no hex colours outside `tokens.css`, and a report of `TODO(Joseph)` markers, draft case studies and case study word counts. In CI (strict mode) it also fails when the CV PDF is missing. |
+| `npm run check:links` | Checks every internal link, asset, anchor and redirect in `dist/`. Run after a build. |
+| `npm run size` | Client JavaScript budget: under 10 KB gzipped in total. Run after a build. |
+| `npm run screens` | Screenshots every route at 1440, 768 and 390 in light and dark (reduced motion on) plus the hero keyframes, into `.screens/`. Run after a build. |
+| `npm run test:a11y` | Playwright tests: axe on every route in both themes, the keyboard pass and the motion behaviour. Run after a build. |
+| `npm run lhci` | Lighthouse CI (mobile) on `/` and `/work/apl/`; fails below 95 in any category. Run after a build. |
+| `npm run og` | Regenerates `public/og.png` from the hidden `/og` page, and the PNG favicons from `public/favicon.svg`. Run after a build, then build again. |
+| `npm run cv` | Prints the hidden `/cv-print` page to `public/cv/Joseph-Kofi-Asante-CV.pdf`: two A4 pages of real, selectable text with working links. Run after a build, then build again. |
+
+Playwright and Lighthouse need a Chromium. Either run `npx playwright install chromium` once,
+or point them at one you already have with `CHROMIUM_PATH` (Playwright) and `CHROME_PATH`
+(Lighthouse).
+
+## Editing content
+
+Everything on the site must be traceable to `docs/brief.md`. Change a fact there first, then
+here. `npm run check` enforces the blocked terms and punctuation rules.
+
+### Add a case study
+
+1. Create `src/content/work/<slug>.mdx` with this frontmatter (the schema is in
+   `src/content.config.ts`):
+
+   ```yaml
+   ---
+   title: Project title
+   slug: project-slug          # becomes /work/project-slug/
+   order: 6                    # position on the home page and in previous/next
+   outcome: One line on what it achieved.
+   client: Client name
+   role: Your role
+   team: Eight engineers       # optional, only if known
+   when: 2024 to 2025          # optional, only if known
+   stack: [".NET", "SQL Server"]
+   chips: [".NET", "SQL Server"] # up to four, shown on the home page tile
+   tile: row                   # feature, pair or row
+   draft: true                 # until reviewed
+   ---
+   ```
+
+2. Write the body with the sections `## Context`, `## The problem`, `## What I did`,
+   `## Key decisions` and `## Outcome`. For key decisions, import
+   `src/components/KeyDecisions.astro` and pass `items` with `decision`, `why` and, only when
+   there was one, `alternative`. For code, use `src/components/CodeBlock.astro`.
+3. Add its architecture diagram: copy one of `src/components/diagrams/Diagram*.astro`, describe
+   the boxes and arrows for the wide, medium, narrow and compact (four boxes at most) layouts,
+   and register it with a caption in `src/lib/diagrams.ts`.
+4. Run `npm run check` (word counts are reported), `npm run build` and `npm run screens`,
+   look at the screenshots, and log the review in `docs/review-log.md`.
+
+### Add a certification
+
+Add one entry to `src/data/credentials.ts`, for example:
+
+```ts
+{ title: 'Microsoft Certified: Azure Administrator Associate (AZ-104)', when: '2027' },
+```
+
+Use `status: true` for entries such as "In progress" so they show in the status colour, and
+update or remove the "Currently studying" entry as things change. No layout work is needed.
+
+### Add a post
+
+Create `src/content/posts/<name>.md` with:
+
+```yaml
+---
+title: Post title
+date: 2026-10-01
+platform: Where it was published
+url: https://example.com/the-post
+readingMinutes: 6
+---
+```
+
+The Writing section appears on the home page automatically once there is at least one post,
+and links out to `url`. With no posts there is no section at all.
+
+### Turn on "Now building"
+
+1. Tidy the [cross-border-settlement](https://github.com/falcon262/cross-border-settlement)
+   README.
+2. In `src/components/NowBuilding.astro`, fill `whatWorksToday` (the `TODO(Joseph)`), only
+   from what the repository's README and code demonstrably do.
+3. In `src/data/site.ts`, set `flags.nowBuilding` to `true`.
+
+## The CV PDF
+
+Every "Download CV" button links to **`public/cv/Joseph-Kofi-Asante-CV.pdf`**. It is printed
+from the site's own data, so it never says more than the site does:
+
+- The CV wording (profile, points for each role, the APL project, earlier work) is in
+  `src/data/cv.ts`.
+- Titles, dates, locations, contact details, tools and credentials come from the same data
+  files as the site.
+- The layout is `src/pages/cv-print.astro`, a hidden page (noindex, not in the sitemap).
+
+After changing any of these, run `npm run build`, `npm run cv` and `npm run build` again, look
+at the PDF, and commit it. It must stay at two pages.
+
+The CV uses the static Schibsted Grotesk files (`@fontsource/schibsted-grotesk`) rather than
+the variable font. Chromium's PDF output draws variable fonts as Type 3 glyph shapes, which some
+applicant tracking systems read poorly; the static files embed as ordinary TrueType text.
+
+To use a CV you wrote yourself instead, replace the file at the same path; nothing else needs
+to change. If the file is missing, `npm run check` and the link check warn locally and fail
+in CI.
+
+## Deployment
+
+GitHub Pages publishes whatever the deploy workflow last uploaded (Settings, then Pages,
+"Source" set to "GitHub Actions").
+
+- `.github/workflows/ci.yml` runs on pull requests: install, check, build, link check,
+  JavaScript budget, Playwright tests and Lighthouse.
+- `.github/workflows/deploy.yml` runs on every push to `master` (and on demand). It has three
+  jobs:
+  1. build with `withastro/action`;
+  2. publish with `actions/deploy-pages`;
+  3. `verify`: request the live site the way a visitor would and fail unless all of these
+     are right:
+     - the home page, `/CV/index.html` and a case study;
+     - the CV PDF;
+     - the legacy `Hobbies.html` and `ContactMe.html` redirects;
+     - the Open Graph image, favicon, sitemap and `robots.txt`;
+     - the 404 page.
+
+     It retries for up to 15 minutes while the Pages CDN catches up.
+
+### Rolling back
+
+Revert the offending commit on `master`; the deploy workflow publishes the reverted site. The
+previous hand-written site is preserved on the `legacy-v1` branch.

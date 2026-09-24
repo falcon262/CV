@@ -1,0 +1,84 @@
+---
+import { Picture } from 'astro:assets';
+import { lab } from '../data/lab';
+---
+
+<section class="section lab" aria-labelledby="lab-title">
+  <div class="container">
+    <h2 id="lab-title" class="section__title">Before enterprise software</h2>
+    <ul class="lab__list" role="list">
+      {
+        lab.map((entry) => (
+          <li class="lab__row">
+            <div class="lab__thumb">
+              {entry.image && (
+                <Picture
+                  src={entry.image.src}
+                  alt={entry.image.alt}
+                  width={128}
+                  height={80}
+                  widths={[128, 256]}
+                  sizes="(min-width: 768px) 128px, 96px"
+                  formats={['avif', 'webp']}
+                  fit="cover"
+                  loading="lazy"
+                  decoding="async"
+                />
+              )}
+            </div>
+            <div class="lab__text">
+              <h3>{entry.title}</h3>
+              <p>{entry.sentence}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .lab__list {
+    list-style: none;
+  }
+
+  .lab__row {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr);
+    gap: var(--space-4);
+    align-items: start;
+    padding-block: var(--space-4);
+    border-top: var(--hairline) solid var(--color-rule);
+  }
+
+  .lab__thumb :global(img) {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    border: var(--hairline) solid var(--color-rule);
+    border-radius: var(--radius-sm);
+  }
+
+  .lab__text {
+    display: grid;
+    gap: var(--space-1);
+    max-width: var(--measure);
+  }
+
+  .lab__text h3 {
+    font-size: var(--step-body);
+    line-height: var(--lh-body);
+  }
+
+  .lab__text p {
+    color: var(--color-ink-muted);
+  }
+
+  @media (min-width: 768px) {
+    .lab__row {
+      grid-template-columns: 128px minmax(0, 1fr);
+      gap: var(--space-6);
+    }
+  }
+</style>

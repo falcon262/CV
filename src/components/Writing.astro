@@ -1,0 +1,61 @@
+---
+/** Writing. Renders only when src/content/posts has at least one entry; there is no public empty state. */
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('posts')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const formatDate = (date: Date) =>
+  new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(date);
+---
+
+{
+  posts.length > 0 && (
+    <section class="section writing" aria-labelledby="writing-title">
+      <div class="container">
+        <h2 id="writing-title" class="section__title">
+          Writing
+        </h2>
+        <ul class="writing__list" role="list">
+          {posts.map((post) => (
+            <li class="writing__row">
+              <h3>
+                <a href={post.data.url}>{post.data.title}</a>
+              </h3>
+              <p class="writing__meta">
+                <time datetime={post.data.date.toISOString().slice(0, 10)}>{formatDate(post.data.date)}</time>
+                <span>{post.data.platform}</span>
+                <span>{post.data.readingMinutes} min read</span>
+              </p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .writing__list {
+    max-width: calc(var(--measure) + var(--space-10));
+    list-style: none;
+  }
+
+  .writing__row {
+    display: grid;
+    gap: var(--space-1);
+    padding-block: var(--space-4);
+    border-top: var(--hairline) solid var(--color-rule);
+  }
+
+  .writing__row h3 {
+    font-size: var(--step-body);
+    line-height: var(--lh-body);
+  }
+
+  .writing__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-5);
+    font-size: var(--step-small);
+    color: var(--color-ink-muted);
+  }
+</style>

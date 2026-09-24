@@ -1,0 +1,285 @@
+# Screenshot review log
+
+Every visual review of the rebuild: what was checked, what was wrong, and what changed.
+Screenshots come from `npm run screens` (routes at 1440, 768 and 390, light and dark,
+reduced motion on, plus hero keyframes at 1440 light with motion). They are saved to
+`.screens/`, which is not committed.
+
+Checklist (docs/brief.md, section 14): hero distinctiveness, uneven work layout,
+left alignment and measure, forbidden patterns (section 5.4), tokens only and navy dark
+mode, no horizontal overflow at 390, complete final states under reduced motion, and copy
+matching the brief word for word.
+
+## M2: home page, static (2026-09-24)
+
+**Shot:** `/` at 1440, 768 and 390 in light and dark, reduced motion on. Also checked
+programmatically that nothing overflows horizontally at 390, 768 or 1440
+(document width equals the viewport minus the scrollbar gutter; the record block's own
+scroll container is the only element allowed to overflow, inside itself).
+
+### Pass 1: what was wrong
+
+1. **Hero, 1440.** The record block rendered at about 9px and floated at mid-height beside
+   the headline, reading as a small widget rather than a deliberate element.
+2. **Selected work.** The feature tile title used the h2 size, so "APL Commissions Platform"
+   competed with the section heading "Selected work".
+3. **Spacing.** Too much empty space between the hero and "Selected work" at 1440.
+4. **Rules.** Section separators ran the full viewport width while every inner rule is
+   container width.
+5. **About.** The portrait's off-white studio background dissolved into the paper colour,
+   so the circle lost its edge in light mode.
+6. **Before enterprise software.** Rows were taller than a "compact list" should be.
+7. **Contact, 390.** The address broke mid-word ("gmail.co / m").
+8. **Lists.** The lab and credentials lists ended with a rule that sat right above the next
+   section's separator, giving a double line.
+
+### Changes
+
+1. Record block top-aligned with the headline and allowed to extend into the right page
+   margin (still keeping at least 32px), which lifts it from about 8px to 9px at 1440 and
+   to 11px at 1680 and 13px at 1920. Added hairline ledger rules between the four records.
+   It now reads as a ledger slip, not a code sample. At 768 it spans the full width above
+   the headline at about 11.5px; at 390 it shows records 1 and 9, scrolls inside its own
+   container and fades at the right edge.
+   *Known constraint:* 94 fixed-width characters in 5 of 12 columns of a 1200px grid cannot
+   be larger than about 9px at 1440 without cropping "BALANCED", so the block is fine print
+   at that width by design; the headline carries the meaning.
+2. All tile titles use the h3 size; the feature tile stands out through its full-width layout,
+   larger outcome text and larger diagram.
+3. The first section after the hero uses a smaller top padding.
+4. Section separators moved onto the container, so every rule on the page shares one width.
+5. Hairline ring (`--color-rule`) around the portrait.
+6. Lab thumbnails 128 by 80 (96 by 60 on mobile) and tighter row padding.
+7. The address breaks after the "@" (`<wbr>`), keeping `--step-h2`.
+8. Removed the list-end rules; the section separator does that job.
+
+### Pass 2: checklist
+
+- Hero: headline dominant, record block reads as deliberate, nothing animates yet (motion is M4).
+- Layout: selected work is visibly uneven: a full-width feature tile, a two-up pair, then
+  two text-led rows with small thumbnails.
+- Alignment and measure: everything left aligned; prose capped with `--measure` (68ch),
+  the About text with 64ch, the hero subline with 60ch.
+- Section 5.4: no eyebrows, numbered markers, arrows in link text, middle dots, shadows,
+  identical card grids, skill bars, logo walls or stock imagery.
+- Tokens: `npm run check` finds no hex colour outside tokens.css; dark mode is navy.
+- 390: no horizontal overflow; the record block scrolls inside its own container.
+- Reduced motion: every screenshot shows complete final states.
+- Copy: hero, experience, about, principles, tools, lab entries, credentials and contact
+  match the brief word for word.
+
+Tooling note: Astro 7 runs `astro preview` in the background when it detects an AI agent.
+The scripts now pass `--ignore-lock`, which keeps the server in the foreground so it stops
+with the script; the behaviour is the same for people and CI.
+
+## M3: case studies (2026-09-24)
+
+**Shot:** the five `/work/<slug>/` pages and the 404 at 1440, 768 and 390 in light and dark,
+reduced motion on. Checked every case page for horizontal overflow at 390, 768 and 1440
+(none; the code block scrolls inside its own frame). Rendered prose word counts, excluding
+code and the decision labels: APL 407, ECOBUD 377, AI reporting engine 367 (target 350 to 600);
+E-VAT 211, IFRS engines 214 (target 200 to 350).
+
+### Pass 1: what was wrong
+
+1. **Code block, 1440.** The block grew to fit its longest line (about 850px), breaking out
+   of the 68ch measure, because its grid track sized to the content.
+2. **Key decisions.** Three boxed panels stacked in a row looked heavier than the
+   editorial page around them, close to the identical-card pattern the brief rules out.
+3. **Serif prose, 390.** `text-wrap: pretty` produced runs of very short trailing lines
+   ("on middleware that makes / that connection.").
+4. **Apostrophes.** MDX body copy renders typographic apostrophes, while component copy used
+   straight ones, so the two page types disagreed.
+5. **Syntax colours.** Shiki's css-variables theme put some identifiers in the settled
+   green and others in ink, which read as random.
+6. **Copy.** A few sentences went beyond the fact sheets ("hard to keep honest", "the finance
+   team", "two habits from this project", "I built the middleware"). Rewritten to stay
+   inside the fact sheets; E-VAT now says "The middleware is built on" rather than claiming
+   the design.
+
+### Changes
+
+1. The code block's grid is `minmax(0, 1fr)`, so it keeps the prose width and scrolls
+   inside itself. The snippet was tightened to 65 characters a line so it fits at desktop
+   without scrolling; it still scrolls at 390.
+2. Decisions are a ruled list: a 2px brand rule on the left of each decision and hairlines
+   between them, with no panels.
+3. Removed `text-wrap: pretty`; headings keep `text-wrap: balance`.
+4. Component copy now uses typographic apostrophes too (same words, consistent typography).
+5. Constants map to ink; only keywords (brand), strings (settled) and comments (muted)
+   carry colour.
+6. Copy edits as listed above.
+
+### Pass 2: checklist
+
+- Layout: header with h1, outcome and a Client, My role, Team and When (only where known),
+  Stack `<dl>`; the architecture diagram at full content width in a `<figure>` with a
+  caption; serif body at 68ch; previous and next with titles, in the brief's order.
+- Diagrams: wide layouts at 1024 and up, medium at 768, narrow vertical layouts at 390,
+  all left aligned at natural size and never scaled up; token colours switch with the theme.
+- Key decisions come only from the fact sheets; the IFRS page has none. ECOBUD's first
+  decision and both AI decisions have no alternative in the fact sheets, so that part is
+  left out rather than invented.
+- The APL code block is captioned "Illustrative, simplified from the production library".
+- Section 5.4: nothing forbidden; "Previous" and "Next" carry no arrows.
+- Tokens only; dark mode navy; no overflow at 390; reduced-motion shots show final states.
+- The 404 is the only centred page.
+
+## M4: motion (2026-09-24)
+
+**Shot:** hero keyframes at 0, 300, 700, 1100 and 1700ms (1440, light, motion on), plus every
+route at 1440, 768 and 390 in both themes with reduced motion on (47 screenshots), plus a
+mid-scroll capture of the experience timeline. Behaviour is covered by `tests/motion.spec.ts`
+(15 passing on desktop and phone profiles; hover is skipped on the phone profile by design).
+
+### Hero keyframes against K1 to K3
+
+- **0ms:** the record panel is empty (every record clipped from the right); headline, subline,
+  actions and availability are hidden. Correct start of K1.
+- **300ms:** records reveal left to right, 90ms apart: record 1 complete, 5 almost complete,
+  6 and 9 partway. The text is at full contrast while parsing. Correct K1.
+- **700ms:** all records revealed; the parsed-field underlines are half drawn left to right;
+  BALANCED is halfway from ink-muted to settled; the check is drawing. Correct K2.
+- **1100ms:** headline words rising 8px and fading in, 40ms apart; the record block is
+  settling towards its resting contrast; the subline group has not started. Correct K3.
+- **1700ms:** final state, identical to the reduced-motion screenshot.
+
+Nothing else animates on load. Only transform, opacity and clip-path animate in the hero,
+plus the check's stroke-dashoffset, which the brief specifies. The full-contrast phase and
+BALANCED's colour change are opacity crossfades of overlay layers, not colour animations.
+
+### Pass 1: what was wrong
+
+1. **Timeline and reading progress did not animate at all.** Vite 8's CSS minifier
+   (Lightning CSS) folded `animation-timeline` into the `animation` shorthand
+   (`animation: linear both timeline-rail --timeline`), which Chromium rejects, so
+   `animation-name` computed to `none`.
+2. **Hero keyframe capture failed** once scroll-driven animations existed, because their
+   `currentTime` cannot be set in milliseconds.
+3. **Tests.** The phone profile did not emulate a phone, so hover-only behaviour ran there,
+   and the hover test targeted text under the stretched tile link.
+
+### Changes
+
+1. Each timeline goes through a custom property (`animation-timeline: var(--rail-timeline)`),
+   which the minifier cannot fold. Verified in the built CSS and in the browser: the rail
+   fills to the middle of the viewport and each dot fills as it passes it; the reading
+   progress bar tracks the page.
+2. `npm run screens` freezes only document-timeline animations for the hero frames.
+3. The phone profile sets `isMobile`; the hover test hovers the tile itself.
+
+### Pass 2: checklist
+
+- Header hides after 120px of downward scroll, returns on scroll up, and stays while the
+  sheet is open or it holds focus.
+- Tiles: on hover (devices that hover) and on keyboard focus, the title underline draws in
+  `--dur-base` and the media frame lifts 4px; nothing else moves.
+- Cross-document view transitions: clicking the APL tile fires `pagereveal` with a view
+  transition; tile and case study share `work-apl-title` and `work-apl-media`, and names are
+  unique on each page. Unsupported browsers navigate normally.
+- Theme toggle: 200ms colour crossfade, sun and moon rotate, the label switches between
+  "Switch to dark theme" and "Switch to light theme", the choice persists and is applied
+  before first paint.
+- Copy email: "Copied" with a check for 1.6s, "Email copied" announced politely; without the
+  Clipboard API the address is selected.
+- Reduced motion: no parse class, no animations at all (`document.getAnimations()` is
+  empty), every screenshot in its final state.
+
+## M5: quality (2026-09-24)
+
+Not a layout pass, but the new visual assets were reviewed by eye: the Open Graph image
+(name, headline and a cropped slice of records 1 and 9 on paper, fading at the right edge)
+and the "JA" monogram, drawn from Schibsted Grotesk Bold outlines so it matches the site
+without loading a font.
+
+| Bar | Result |
+|---|---|
+| Lighthouse, mobile, `/` | Performance 100, Accessibility 100, Best Practices 100, SEO 100 (LCP 1.4s, CLS 0, TBT 0ms) |
+| Lighthouse, mobile, `/work/apl/` | Performance 99, Accessibility 100, Best Practices 100, SEO 100 (LCP 1.8s, CLS 0, TBT 0ms) |
+| Axe, 7 routes, light and dark, desktop and phone | 0 violations of any impact (serious and critical are the bar) |
+| Keyboard | Skip link first and working; every interactive element reached by Tab shows a 2px ring (24 stops on the home page at 1440, 20 at 390); the sheet traps Tab and Shift+Tab, closes on Escape and returns focus to "Menu" |
+| Client JavaScript | 2.04 KB gzipped for the whole site, 1.71 KB on the home page (budget 10 KB) |
+| Links in `dist/` | 232 internal references resolve, including anchors, `srcset` candidates and meta refreshes; `/CV/index.html`, `/CV/Hobbies.html` and `/CV/ContactMe.html` resolve. Only the CV PDF is pending (Joseph supplies it). |
+
+**What was wrong:** Best Practices scored 96 because `favicon.svg` and `favicon.png` did not
+exist yet (404s in the console). Fixed by adding the monogram favicon, its PNG fallback and
+an apple touch icon; the score is now 100.
+
+Also checked: JSON-LD `Person` (name, jobTitle, url, sameAs, address) parses as valid JSON;
+titles, descriptions, canonical and Open Graph tags match section 12; the sitemap lists the
+home page and the five case studies and leaves out `/og/` and the 404; `/og/` is noindex;
+robots.txt points at the sitemap.
+
+## M6: extra widths (2026-09-24)
+
+**Shot:** `/` at 1280 and 1024 (light), beyond the three review widths.
+
+**What was wrong:** at 1280 the record block overflowed the viewport and cropped "BALANCED".
+Five of twelve columns at that width are about 486px, which cannot hold 94 characters at
+the 9px minimum, so the block pushed past the grid and the page scrolled sideways by 20px.
+1024 was fine (stacked layout).
+
+**Change:** the desktop split (headline left 7 columns, record block right 5, 88svh
+minimum height) now starts at 1420px, the first width where five columns plus the right
+margin hold the record at 9px or more. Below that the record block sits above the headline
+at full width, as on tablets (14px at 1024 to 1366). 1440 is unchanged.
+
+**Guard:** `tests/layout.spec.ts` checks every route for horizontal overflow at 1920, 1440,
+1366, 1280, 1024, 768 and 390, and that the record block fits wherever it is not its own
+scroll container. With the old breakpoint the test fails at 1280 (20px overflow); with the
+fix all seven widths pass.
+
+## Cutover: the CV PDF (2026-09-24)
+
+**What:** `public/cv/Joseph-Kofi-Asante-CV.pdf`, printed by `npm run cv` from the hidden
+`/cv-print` page. Wording from `src/data/cv.ts`, restating the brief's fact sheets only;
+titles, dates, contacts, tools and credentials from the site's data files. The retired
+resume in `game_images/` was not used.
+
+**Checked:** each page rendered to PNG with pdf.js and reviewed; text extracted and scanned
+for blocked terms, em dashes, arrows, middle dots, phone numbers and all-caps runs; page
+count, fonts, links, tags and bookmarks read from the file.
+
+**Pass 1: what was wrong**
+- Three pages, not two.
+- Wide gaps before every comma, full stop and colon: `font-variant-numeric: tabular-nums`
+  on the page also switches Schibsted Grotesk's punctuation to tabular widths.
+- Fonts embedded as Type 3 glyph shapes. Chromium's PDF output does this for any variable
+  font, and some applicant tracking systems read Type 3 text poorly.
+- Text order in the file put every bullet point after the role headings: absolutely
+  positioned list items are painted after the rest of the page.
+- The fourth contact link wrapped onto a line of its own, and the skills labels wrapped in a
+  fixed-width column.
+
+**Changes**
+- Removed `tabular-nums`.
+- The page loads the static Schibsted Grotesk 500 and 700 files
+  (`@fontsource/schibsted-grotesk`) under the display family's name, so type still comes
+  from the tokens; they embed as TrueType (CIDFontType2) with ToUnicode maps.
+- Bullet markers are a grid column instead of absolute positioning, so the text runs in
+  reading order.
+- The header is two columns (who on the left, contact links stacked on the right); skills
+  are "Group: items" lines.
+- No footer on page 1, so the name is the first text a parser meets; from page 2, name,
+  email and page count.
+- Trimmed the longest points, all still within the fact sheets. The PwC stack line no longer
+  repeats Active Directory (LDAP), which its ECOBUD point already names. Left out for
+  length: Katapult Mauritius, the 3D office tour, the 3D GPS visualisation and Degraded
+  Redundancy.
+- Sections 16px apart instead of 24px.
+
+**Pass 2**
+- Two A4 pages, 68 KB, PDF 1.4. Title "Joseph Kofi Asante, CV", language en-GB, tagged,
+  with bookmarks for every section.
+- Fonts: TrueType (CIDFontType2) only, with ToUnicode maps. The extracted text reads in
+  order: name, headline, availability, contacts, profile, then each role's heading followed
+  by its points.
+- Clickable links: email, portfolio, LinkedIn and GitHub.
+- Scan clean: no blocked terms, no Falcon Solutions, no AI-102, no phone number, no em dash,
+  arrow or middle dot. The only all-caps runs are names and acronyms (ECOWAS, ECOBUD, NACHA,
+  IFRS, LDAP, PARC, REST).
+- Only the two allowed metrics appear, and none of the scale facts (44 domains, 75+ APIs,
+  443 items, 32 cost centres). APL stands alone as a selected project because the brief
+  does not say where or when it was delivered.
+- Site pages unchanged: all 47 screenshots from `npm run screens` (every route at 1440, 768
+  and 390 in both themes, plus the hero frames) are pixel-identical to the previous run.

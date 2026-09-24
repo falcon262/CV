@@ -1,0 +1,189 @@
+---
+import { experience } from '../data/experience';
+
+/** Dates render as written in the brief; <time> carries the machine-readable value. */
+function dateParts(dates: string, start: string, end?: string) {
+  const [from, to] = dates.split(' to ');
+  return { from: from ?? dates, to: to ?? '', start, end };
+}
+---
+
+<section class="section experience" id="experience" aria-labelledby="experience-title">
+  <div class="container">
+    <h2 id="experience-title" class="section__title">Experience</h2>
+    <ol class="timeline" role="list">
+      {
+        experience.map((role) => {
+          const date = dateParts(role.dates, role.start, role.end);
+          return (
+            <li class="timeline__item">
+              <p class="timeline__dates">
+                <time datetime={date.start}>{date.from}</time>
+                {' to '}
+                {date.end ? <time datetime={date.end}>{date.to}</time> : date.to}
+              </p>
+              <h3 class="timeline__title">{role.title}</h3>
+              <p class="timeline__where">
+                {role.company}
+                <span class="timeline__location">{role.location}</span>
+              </p>
+              <p class="timeline__summary">{role.summary}</p>
+            </li>
+          );
+        })
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .timeline {
+    --rail-x: 5px;
+    --dot: 11px;
+    position: relative;
+    display: grid;
+    gap: var(--space-7);
+    max-width: calc(var(--measure) + var(--space-7));
+    padding-left: var(--space-7);
+    list-style: none;
+  }
+
+  /* The rail: 1px, full height. Filled with brand; the scroll-driven fill is layered on in M4. */
+  .timeline::before,
+  .timeline::after {
+    content: '';
+    position: absolute;
+    top: 0.5em;
+    bottom: 0;
+    left: var(--rail-x);
+    width: var(--hairline);
+  }
+
+  .timeline::before {
+    background: var(--color-rule);
+  }
+
+  .timeline::after {
+    background: var(--color-brand);
+    transform-origin: top;
+  }
+
+  .timeline__item {
+    position: relative;
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  /* One dot per item, centred on the rail and aligned with the dates. */
+  .timeline__item::before,
+  .timeline__item::after {
+    content: '';
+    position: absolute;
+    top: calc(0.5em * var(--lh-small) + 0.25em);
+    left: calc(-1 * var(--space-7) + var(--rail-x) + var(--hairline) / 2 - var(--dot) / 2);
+    width: var(--dot);
+    height: var(--dot);
+    border-radius: var(--radius-full);
+    z-index: 1;
+  }
+
+  .timeline__item::before {
+    background: var(--color-paper);
+    border: var(--hairline) solid var(--color-brand);
+  }
+
+  .timeline__item::after {
+    background: var(--color-brand);
+  }
+
+  .timeline__dates {
+    font-size: var(--step-small);
+    line-height: var(--lh-small);
+    color: var(--color-ink-muted);
+  }
+
+  .timeline__title {
+    font-size: var(--step-h3);
+    line-height: var(--lh-h3);
+  }
+
+  .timeline__where {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-3);
+    color: var(--color-ink);
+  }
+
+  .timeline__location {
+    color: var(--color-ink-muted);
+  }
+
+  .timeline__summary {
+    max-width: var(--measure);
+    margin-top: var(--space-2);
+  }
+
+  /*
+    Scroll-driven: the rail fills with brand as the section scrolls, and each dot
+    fills as it passes the middle of the viewport. Without support (or under
+    reduced motion) the rail and dots simply show filled.
+  */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .timeline {
+        view-timeline: --timeline block;
+      }
+
+      /* Timelines go through custom properties so the CSS minifier cannot fold them into
+         the animation shorthand (which browsers reject). */
+      .timeline::after {
+        --rail-timeline: --timeline;
+        animation: timeline-rail linear both;
+        animation-timeline: var(--rail-timeline);
+        animation-range: cover 50vh cover calc(100% - 50vh);
+      }
+
+      .timeline__item {
+        view-timeline: --timeline-item block;
+      }
+
+      .timeline__item::after {
+        --dot-timeline: --timeline-item;
+        animation: timeline-dot linear both;
+        animation-timeline: var(--dot-timeline);
+        animation-range: cover calc(50vh + 0.75em) cover calc(50vh + 1.5em);
+      }
+    }
+  }
+
+  @keyframes timeline-rail {
+    from {
+      transform: scaleY(0);
+    }
+
+    to {
+      transform: scaleY(1);
+    }
+  }
+
+  @keyframes timeline-dot {
+    from {
+      transform: scale(0);
+    }
+
+    to {
+      transform: scale(1);
+    }
+  }
+
+  @media (max-width: 767.98px) {
+    .timeline {
+      padding-left: var(--space-6);
+    }
+
+    .timeline__item::before,
+    .timeline__item::after {
+      left: calc(-1 * var(--space-6) + var(--rail-x) + var(--hairline) / 2 - var(--dot) / 2);
+    }
+  }
+</style>
