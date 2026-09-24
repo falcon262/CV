@@ -139,20 +139,26 @@ in CI.
 
 ## Deployment
 
+GitHub Pages publishes whatever the deploy workflow last uploaded (Settings, then Pages,
+"Source" set to "GitHub Actions").
+
 - `.github/workflows/ci.yml` runs on pull requests: install, check, build, link check,
   JavaScript budget, Playwright tests and Lighthouse.
-- `.github/workflows/deploy.yml` runs on every push to `master` (and on demand): it builds with
-  `withastro/action` and publishes with `actions/deploy-pages`.
+- `.github/workflows/deploy.yml` runs on every push to `master` (and on demand). It has three
+  jobs:
+  1. build with `withastro/action`;
+  2. publish with `actions/deploy-pages`;
+  3. `verify`: request the live site the way a visitor would and fail unless all of these
+     are right:
+     - the home page, `/CV/index.html` and a case study;
+     - the CV PDF;
+     - the legacy `Hobbies.html` and `ContactMe.html` redirects;
+     - the Open Graph image, favicon, sitemap and `robots.txt`;
+     - the 404 page.
 
-### Cutover from the old site
+     It retries for up to 15 minutes while the Pages CDN catches up.
 
-1. Put the latest CV PDF at `public/cv/Joseph-Kofi-Asante-CV.pdf` on the `redesign` branch and
-   push.
-2. On GitHub, go to Settings, then Pages, and change "Source" from "Deploy from a branch" to
-   "GitHub Actions". Do this immediately before merging; otherwise Pages would briefly serve
-   the raw Astro source from `master`.
-3. Merge the pull request and watch the deploy workflow finish.
-4. Check that https://falcon262.github.io/CV/, `/CV/index.html` and a case study page load,
-   and that the CV downloads.
-5. If anything is wrong, revert the merge. The old site is preserved on `legacy-v1` (and on
-   the `v1-legacy` tag once it is pushed).
+### Rolling back
+
+Revert the offending commit on `master`; the deploy workflow publishes the reverted site. The
+previous hand-written site is preserved on the `legacy-v1` branch.

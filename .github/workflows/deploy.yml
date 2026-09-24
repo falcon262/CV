@@ -1,7 +1,7 @@
 name: Deploy to GitHub Pages
 
-# Builds with withastro/action and publishes with actions/deploy-pages.
-# Requires Settings, Pages, Source set to "GitHub Actions" (see README.md, Cutover).
+# Builds with withastro/action, publishes with actions/deploy-pages, then checks the live
+# site. Requires Settings, Pages, Source set to "GitHub Actions" (see README.md, Deployment).
 
 on:
   push:
@@ -35,7 +35,81 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
+
+  # Requests the live site the way a visitor would (docs/brief.md, section 16, step 4).
+  # Retries for up to 15 minutes while the Pages CDN catches up with the new deployment.
+  verify:
+    needs: deploy
+    runs-on: ubuntu-latest
+    permissions: {}
+    env:
+      SITE: ${{ needs.deploy.outputs.page_url }}
+    steps:
+      - name: Check the live site
+        shell: bash
+        run: |
+          set -uo pipefail
+          base="${SITE%/}"
+          work="$(mktemp -d)"
+
+          # check PATH STATUS [TEXT] [TYPE] passes when PATH answers with STATUS, its body
+          # contains TEXT, and its content type starts with TYPE.
+          check() {
+            local path="$1" status="$2" text="${3:-}" type="${4:-}" code ctype
+            code="$(curl -sS --max-time 30 -o "$work/body" -D "$work/headers" -w '%{http_code}' "$base$path" 2>/dev/null)" || code=000
+            ctype="$(grep -i '^content-type:' "$work/headers" 2>/dev/null | tail -n 1 | cut -d' ' -f2- | tr -d '\r')"
+            if [ "$code" != "$status" ]; then
+              echo "  fail  $path: status $code, expected $status"
+              return 1
+            fi
+            if [ -n "$text" ] && ! grep -qF -- "$text" "$work/body"; then
+              echo "  fail  $path: does not contain \"$text\""
+              return 1
+            fi
+            if [ -n "$type" ] && [[ "$ctype" != "$type"* ]]; then
+              echo "  fail  $path: content type \"$ctype\", expected $type"
+              return 1
+            fi
+            echo "  ok    $path: $code, $ctype"
+          }
+
+          checks() {
+            local failed=0
+            check / 200 'I build software that has to balance.' text/html || failed=1
+            check /index.html 200 'I build software that has to balance.' text/html || failed=1
+            check /work/apl/ 200 'APL Commissions Platform' text/html || failed=1
+            if check /cv/Joseph-Kofi-Asante-CV.pdf 200 '' application/pdf; then
+              if [ "$(head -c 5 "$work/body")" != '%PDF-' ]; then
+                echo "  fail  /cv/Joseph-Kofi-Asante-CV.pdf: not a PDF file"
+                failed=1
+              fi
+            else
+              failed=1
+            fi
+            check /Hobbies.html 200 'content="0; url=/CV/"' text/html || failed=1
+            check /ContactMe.html 200 'content="0; url=/CV/#contact"' text/html || failed=1
+            check /og.png 200 '' image/png || failed=1
+            check /favicon.svg 200 '' image/svg+xml || failed=1
+            check /sitemap-index.xml 200 'sitemap-0.xml' || failed=1
+            check /robots.txt 200 'Sitemap: https://falcon262.github.io/CV/sitemap-index.xml' text/plain || failed=1
+            check /this-page-does-not-exist/ 404 'This page doesn’t exist.' text/html || failed=1
+            return "$failed"
+          }
+
+          deadline=$((SECONDS + 900))
+          round=1
+          until echo "Round $round against $base" && checks; do
+            if [ "$SECONDS" -ge "$deadline" ]; then
+              echo "::error::The live site still fails the checks above after 15 minutes."
+              exit 1
+            fi
+            round=$((round + 1))
+            sleep 30
+          done
+          echo "Every check passed."
