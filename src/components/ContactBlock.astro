@@ -66,23 +66,4 @@ const [emailUser, emailDomain] = site.email.split('@');
     list-style: none;
   }
 
-  /* Copying needs JavaScript; without it the mailto link is enough. */
-  :global(html:not(.js)) .copy-button {
-    display: none;
-  }
-
-  .copy-button__check {
-    display: none;
-    width: 0.9em;
-    height: 0.9em;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.75;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-
-  :global(.copy-button.is-copied) .copy-button__check {
-    display: block;
-  }
 </style>

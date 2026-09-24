@@ -17,7 +17,7 @@ export const lab: LabEntry[] = [
   {
     title: 'PARC Robotics virtual sandbox',
     sentence:
-      "The Pan-African Robotics Competition sandbox, shipped as a Unity WebGL build with a block-based visual scripting engine, profiled for build size, load time and memory so it ran well in students' browsers.",
+      "The Pan-African Robotics Competition sandbox, shipped as a Unity WebGL build with a block-based visual scripting engine, profiled for build size, load time and memory so it ran well in students’ browsers.",
     image: {
       src: parcSandbox,
       alt: 'A block-based script beside a robot on a 3D competition mat.',
@@ -25,7 +25,7 @@ export const lab: LabEntry[] = [
   },
   {
     title: 'Katapult Mauritius',
-    sentence: "The same visual scripting platform, used for PARC Robotics' programme in Mauritius.",
+    sentence: "The same visual scripting platform, used for PARC Robotics’ programme in Mauritius.",
     image: {
       src: katapultMauritius,
       alt: 'Visual scripting blocks dressing a 3D character in a hard hat and safety vest.',
@@ -57,7 +57,7 @@ export const lab: LabEntry[] = [
   },
   {
     title: 'Gold Coast',
-    sentence: "An educational Unity game about Ghana's colonial history and the road to independence.",
+    sentence: "An educational Unity game about Ghana’s colonial history and the road to independence.",
     image: {
       src: goldCoast,
       alt: 'The gates of Jubilee House rendered in 3D at dusk.',

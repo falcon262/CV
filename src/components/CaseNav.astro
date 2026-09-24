@@ -1,0 +1,80 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { url } from '../lib/url';
+
+interface Props {
+  previous?: CollectionEntry<'work'>;
+  next?: CollectionEntry<'work'>;
+}
+
+const { previous, next } = Astro.props;
+---
+
+<nav class="case-nav" aria-label="More case studies">
+  <div class="container case-nav__inner">
+    {
+      previous && (
+        <a class="case-nav__link" href={url(`work/${previous.data.slug}/`)} rel="prev">
+          <span class="case-nav__label">Previous</span>
+          <span class="case-nav__title">{previous.data.title}</span>
+        </a>
+      )
+    }
+    {
+      next && (
+        <a class="case-nav__link case-nav__link--next" href={url(`work/${next.data.slug}/`)} rel="next">
+          <span class="case-nav__label">Next</span>
+          <span class="case-nav__title">{next.data.title}</span>
+        </a>
+      )
+    }
+  </div>
+</nav>
+
+<style>
+  .case-nav__inner {
+    display: grid;
+    gap: var(--space-5);
+    padding-block: var(--space-7) var(--space-8);
+    border-top: var(--hairline) solid var(--color-rule);
+  }
+
+  @media (min-width: 768px) {
+    .case-nav__inner {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: var(--gutter);
+    }
+
+    .case-nav__link--next {
+      grid-column: 2;
+    }
+  }
+
+  .case-nav__link {
+    display: grid;
+    gap: var(--space-1);
+    padding: var(--space-5);
+    border: var(--hairline) solid var(--color-rule);
+    border-radius: var(--radius-md);
+    color: var(--color-ink);
+    text-decoration: none;
+    transition: border-color var(--dur-fast) var(--ease-standard);
+  }
+
+  .case-nav__link:hover {
+    border-color: var(--color-brand);
+    color: var(--color-ink);
+  }
+
+  .case-nav__label {
+    font-size: var(--step-small);
+    line-height: var(--lh-small);
+    color: var(--color-ink-muted);
+  }
+
+  .case-nav__title {
+    font-size: var(--step-h3);
+    line-height: var(--lh-h3);
+    font-weight: var(--weight-bold);
+  }
+</style>

@@ -5,9 +5,11 @@ import { variantsFor, type DiagramContext, type DiagramLayouts } from '../../lib
 interface Props {
   context: DiagramContext;
   caption?: string;
+  framed?: boolean;
+  frameStyle?: string;
 }
 
-const { context, caption } = Astro.props;
+const { context, caption, framed, frameStyle } = Astro.props;
 
 const full =
   'Core banking data goes to both the IFRS 9 expected credit loss engine and the IFRS 16 lease engine. Both go to regulatory reports.';
@@ -92,4 +94,6 @@ const layouts: DiagramLayouts = {
   title="IFRS 9 and IFRS 16 engines architecture"
   variants={variantsFor(context, layouts)}
   caption={caption}
+  framed={framed}
+  frameStyle={frameStyle}
 />

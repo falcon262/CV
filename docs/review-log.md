@@ -71,3 +71,56 @@ scroll container is the only element allowed to overflow, inside itself).
 Tooling note: Astro 7 runs `astro preview` in the background when it detects an AI agent.
 The scripts now pass `--ignore-lock`, which keeps the server in the foreground so it stops
 with the script; the behaviour is the same for people and CI.
+
+## M3: case studies (2026-09-24)
+
+**Shot:** the five `/work/<slug>/` pages and the 404 at 1440, 768 and 390 in light and dark,
+reduced motion on. Checked every case page for horizontal overflow at 390, 768 and 1440
+(none; the code block scrolls inside its own frame). Rendered prose word counts, excluding
+code and the decision labels: APL 407, ECOBUD 377, AI reporting engine 367 (target 350 to 600);
+E-VAT 211, IFRS engines 214 (target 200 to 350).
+
+### Pass 1: what was wrong
+
+1. **Code block, 1440.** The block grew to fit its longest line (about 850px), breaking out
+   of the 68ch measure, because its grid track sized to the content.
+2. **Key decisions.** Three boxed panels stacked in a row looked heavier than the
+   editorial page around them, close to the identical-card pattern the brief rules out.
+3. **Serif prose, 390.** `text-wrap: pretty` produced runs of very short trailing lines
+   ("on middleware that makes / that connection.").
+4. **Apostrophes.** MDX body copy renders typographic apostrophes, while component copy used
+   straight ones, so the two page types disagreed.
+5. **Syntax colours.** Shiki's css-variables theme put some identifiers in the settled
+   green and others in ink, which read as random.
+6. **Copy.** A few sentences went beyond the fact sheets ("hard to keep honest", "the finance
+   team", "two habits from this project", "I built the middleware"). Rewritten to stay
+   inside the fact sheets; E-VAT now says "The middleware is built on" rather than claiming
+   the design.
+
+### Changes
+
+1. The code block's grid is `minmax(0, 1fr)`, so it keeps the prose width and scrolls
+   inside itself. The snippet was tightened to 65 characters a line so it fits at desktop
+   without scrolling; it still scrolls at 390.
+2. Decisions are a ruled list: a 2px brand rule on the left of each decision and hairlines
+   between them, with no panels.
+3. Removed `text-wrap: pretty`; headings keep `text-wrap: balance`.
+4. Component copy now uses typographic apostrophes too (same words, consistent typography).
+5. Constants map to ink; only keywords (brand), strings (settled) and comments (muted)
+   carry colour.
+6. Copy edits as listed above.
+
+### Pass 2: checklist
+
+- Layout: header with h1, outcome and a Client, My role, Team and When (only where known),
+  Stack `<dl>`; the architecture diagram at full content width in a `<figure>` with a
+  caption; serif body at 68ch; previous and next with titles, in the brief's order.
+- Diagrams: wide layouts at 1024 and up, medium at 768, narrow vertical layouts at 390,
+  all left aligned at natural size and never scaled up; token colours switch with the theme.
+- Key decisions come only from the fact sheets; the IFRS page has none. ECOBUD's first
+  decision and both AI decisions have no alternative in the fact sheets, so that part is
+  left out rather than invented.
+- The APL code block is captioned "Illustrative, simplified from the production library".
+- Section 5.4: nothing forbidden; "Previous" and "Next" carry no arrows.
+- Tokens only; dark mode navy; no overflow at 390; reduced-motion shots show final states.
+- The 404 is the only centred page.

@@ -1,0 +1,18 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection } from 'astro:content';
+import CaseStudy from '../../layouts/CaseStudy.astro';
+
+export const getStaticPaths = (async () => {
+  // Order: apl, ecobud, ai-reporting-engine, e-vat, ifrs-engines.
+  const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
+  return work.map((entry, index) => ({
+    params: { slug: entry.data.slug },
+    props: { entry, previous: work[index - 1], next: work[index + 1] },
+  }));
+}) satisfies GetStaticPaths;
+
+const { entry, previous, next } = Astro.props;
+---
+
+<CaseStudy entry={entry} previous={previous} next={next} />

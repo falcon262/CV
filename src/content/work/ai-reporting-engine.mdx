@@ -12,4 +12,45 @@ tile: pair
 draft: true
 ---
 
-Body written in M3.
+import KeyDecisions from '../../components/KeyDecisions.astro';
+
+## Context
+
+At TechHalo Labs I lead a team of eight engineers on an enterprise AI platform made up of eight microservices. On that platform we delivered an AI-powered reporting engine for a healthcare client's customer service platform, with me as the senior engineer leading the team.
+
+## The problem
+
+The client's staff needed answers about how member enquiries are handled, and those answers sit in operational data. They needed to ask their own questions of that data, and to run a set of reports that stay live rather than going stale.
+
+A key report had been kept from launching. For reports to run safely in production, the way two internal systems shared data had to change, so that sensitive credentials were never exposed along the way.
+
+## What I did
+
+I delivered the reporting engine. Staff query operational data in plain English, and they run a catalogue of live reports on how member enquiries are handled.
+
+I redesigned the way the two internal systems share data, so reports run in production without exposing sensitive credentials. That resolved the blocker that had kept the key report from launching, and I saw the work through from design to live release.
+
+Some design decisions along the way were contested. Rather than settle them by debate, I used analysis of live data to decide.
+
+I also produced a prioritised set of security and reliability risks for the team, so everyone can see which ones to address first.
+
+## Key decisions
+
+<KeyDecisions
+  items={[
+    {
+      decision: 'Redesign how the two systems share data, so reporting never handles sensitive credentials.',
+      why: 'It unblocked a key report for production.',
+    },
+    {
+      decision: 'Settle contested design questions with analysis of live data.',
+      why: 'The choice rested on evidence rather than opinion.',
+    },
+  ]}
+/>
+
+## Outcome
+
+Staff ask questions of operational data in plain English and run a catalogue of live reports on how member enquiries are handled. The key report that had been blocked is live, and reports run in production without exposing sensitive credentials.
+
+The team also has a prioritised set of security and reliability risks to work from. Both decisions reflect how I like to work: keep secrets out of the data path, and when a design question is contested, look at the live data before choosing.

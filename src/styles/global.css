@@ -100,10 +100,6 @@ h3 {
   line-height: var(--lh-h3);
 }
 
-p {
-  text-wrap: pretty;
-}
-
 a {
   color: var(--color-brand);
   text-decoration-line: underline;
@@ -261,6 +257,26 @@ a:hover {
   min-height: 40px;
   padding: var(--space-2) var(--space-4);
   font-size: var(--step-small);
+}
+
+/* Copy buttons (email, code). Copying needs JavaScript, so they hide without it. */
+html:not(.js) .copy-button {
+  display: none;
+}
+
+.copy-button__check {
+  display: none;
+  width: 0.9em;
+  height: 0.9em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.copy-button.is-copied .copy-button__check {
+  display: block;
 }
 
 /*

@@ -5,9 +5,11 @@ import { variantsFor, type DiagramContext, type DiagramLayouts } from '../../lib
 interface Props {
   context: DiagramContext;
   caption?: string;
+  framed?: boolean;
+  frameStyle?: string;
 }
 
-const { context, caption } = Astro.props;
+const { context, caption, framed, frameStyle } = Astro.props;
 
 const full =
   'Budget planning in UA and USD goes to a four-level approval, then becomes the approved budget. SAP expenditure data goes to variance analysis, then to reports. Sign-in is via Active Directory.';
@@ -100,4 +102,6 @@ const layouts: DiagramLayouts = {
   title="ECOBUD architecture"
   variants={variantsFor(context, layouts)}
   caption={caption}
+  framed={framed}
+  frameStyle={frameStyle}
 />

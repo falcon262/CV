@@ -86,6 +86,7 @@ function frontmatter(text) {
 function countWords(body) {
   const prose = body
     .replace(/^import .*$/gm, ' ')
+    .replace(/^export const \w+ = `[\s\S]*?`;\s*$/gm, ' ')
     .replace(/```[\s\S]*?```/g, ' ')
     .replace(/<CodeBlock[\s\S]*?\/>/g, ' ')
     .replace(/\b(?:KeyDecisions|items|decision|alternative|why)\b\s*[:=]?/g, ' ')

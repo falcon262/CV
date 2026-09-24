@@ -14,30 +14,48 @@ interface Props {
   title: string;
   variants: Array<{ layout: LayoutSpec; show: Breakpoint }>;
   caption?: string;
-  class?: string;
+  /** Draw the surface frame here (case study pages); tiles draw their own. */
+  framed?: boolean;
+  /** Inline style for the frame, used for the view-transition name. */
+  frameStyle?: string;
 }
 
-const { uid, title, variants, caption, class: className } = Astro.props;
+const { uid, title, variants, caption, framed = false, frameStyle } = Astro.props;
 ---
 
-<figure class:list={['diagram', className]}>
-  {
-    variants.map((variant, index) => (
-      <DiagramSvg
-        uid={`${uid}-${index}`}
-        title={title}
-        layout={variant.layout}
-        class={variant.show === 'all' ? undefined : `bp-${variant.show}`}
-      />
-    ))
-  }
+<figure class="diagram">
+  <div class:list={['diagram__frame', { 'diagram__frame--framed': framed }]} style={frameStyle}>
+    {
+      variants.map((variant, index) => (
+        <DiagramSvg
+          uid={`${uid}-${index}`}
+          title={title}
+          layout={variant.layout}
+          class={variant.show === 'all' ? undefined : `bp-${variant.show}`}
+        />
+      ))
+    }
+  </div>
   {caption && <figcaption>{caption}</figcaption>}
 </figure>
 
 <style>
   .diagram {
     display: grid;
-    gap: var(--space-4);
+    gap: var(--space-3);
+  }
+
+  .diagram__frame--framed {
+    padding: var(--space-6);
+    border: var(--hairline) solid var(--color-rule);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+  }
+
+  @media (max-width: 767.98px) {
+    .diagram__frame--framed {
+      padding: var(--space-4);
+    }
   }
 
   figcaption {

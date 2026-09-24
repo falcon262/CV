@@ -5,9 +5,11 @@ import { variantsFor, type DiagramContext, type DiagramLayouts } from '../../lib
 interface Props {
   context: DiagramContext;
   caption?: string;
+  framed?: boolean;
+  frameStyle?: string;
 }
 
-const { context, caption } = Astro.props;
+const { context, caption, framed, frameStyle } = Astro.props;
 
 const full =
   'A staff question in plain English goes to the reporting engine, then to operational data, then to the live report catalogue. The link between the engine and the data carries no credentials.';
@@ -111,4 +113,6 @@ const layouts: DiagramLayouts = {
   title="AI reporting engine architecture"
   variants={variantsFor(context, layouts)}
   caption={caption}
+  framed={framed}
+  frameStyle={frameStyle}
 />

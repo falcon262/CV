@@ -12,4 +12,50 @@ tile: pair
 draft: true
 ---
 
-Body written in M3.
+import KeyDecisions from '../../components/KeyDecisions.astro';
+
+## Context
+
+The ECOWAS Parliament plans and approves a budget that is shared across member states and held in more than one currency. At PwC Ghana I architected ECOBUD, an automated budget management system for the Parliament, and led it as technical lead through to completion in August 2025. The budget it manages runs to 443 commitment items across 32 cost centres.
+
+## The problem
+
+A budget shared across member states needs one clear path to approval. ECOBUD's budgets are planned in UA and USD, every item has to pass through four levels of approval, and each approval has to leave a trail that can be audited.
+
+Spending is recorded separately, in SAP. Variance analysis, the comparison of actual expenditure against the approved budget, depends on getting that expenditure data into the budget system without typing it in a second time.
+
+## What I did
+
+I designed ECOBUD around one approval engine and one source of expenditure data. The system brings together:
+
+- multi-currency budgeting in UA and USD
+- a four-level approval workflow
+- SAP integration for expenditure tracking, with variance analysis
+- sign-in through Active Directory (LDAP)
+- Excel reporting with EPPlus
+
+Each of the four approval levels is part of the same workflow, so an approval is recorded the same way wherever it happens. Sign-in goes through Active Directory (LDAP), so people use their directory accounts rather than a separate login.
+
+It is built in C# on .NET with ABP Framework, with an Angular and TypeScript front end and SQL Server underneath. As architect I set the shape of the system; as technical lead I took it from design to completion.
+
+## Key decisions
+
+<KeyDecisions
+  items={[
+    {
+      decision: 'A single four-level approval workflow engine.',
+      why: 'One auditable approval trail across all member states.',
+    },
+    {
+      decision: 'Integrate with SAP for expenditure data.',
+      alternative: 'Manual re-entry.',
+      why: 'Variance analysis stays current without duplicate data entry.',
+    },
+  ]}
+/>
+
+## Outcome
+
+ECOBUD cut budget processing time by half across ECOWAS member states. The Parliament's multi-currency, multi-country budget now has a single auditable approval trail: every line follows the same four-level workflow, whichever member state it belongs to, and anyone auditing a budget line can follow its whole path to approval.
+
+Because expenditure comes straight from SAP, variance analysis stays current without anyone entering the same figures twice, and reports are produced in Excel directly from the system.

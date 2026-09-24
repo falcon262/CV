@@ -5,9 +5,11 @@ import { variantsFor, type DiagramContext, type DiagramLayouts } from '../../lib
 interface Props {
   context: DiagramContext;
   caption?: string;
+  framed?: boolean;
+  frameStyle?: string;
 }
 
-const { context, caption } = Astro.props;
+const { context, caption, framed, frameStyle } = Astro.props;
 
 const full =
   'Broker onboarding leads to commission calculation, then the general ledger, then NACHA file generation, then the bank. The general ledger also feeds reports in PDF and Excel.';
@@ -123,4 +125,6 @@ const layouts: DiagramLayouts = {
   title="APL Commissions Platform architecture"
   variants={variantsFor(context, layouts)}
   caption={caption}
+  framed={framed}
+  frameStyle={frameStyle}
 />

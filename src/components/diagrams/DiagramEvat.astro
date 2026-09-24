@@ -5,9 +5,11 @@ import { variantsFor, type DiagramContext, type DiagramLayouts } from '../../lib
 interface Props {
   context: DiagramContext;
   caption?: string;
+  framed?: boolean;
+  frameStyle?: string;
 }
 
-const { context, caption } = Astro.props;
+const { context, caption, framed, frameStyle } = Astro.props;
 
 const full =
   'A business ERP connects to the middleware (saga, outbox, retries), then to the GRA E-VAT service. The certified invoice is returned to the ERP.';
@@ -92,4 +94,6 @@ const layouts: DiagramLayouts = {
   title="E-VAT middleware architecture"
   variants={variantsFor(context, layouts)}
   caption={caption}
+  framed={framed}
+  frameStyle={frameStyle}
 />

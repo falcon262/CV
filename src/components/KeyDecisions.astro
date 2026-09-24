@@ -1,0 +1,76 @@
+---
+/**
+ * Key decisions on a case study. Each decision is a <dl> with up to three
+ * labelled parts. Only decisions from the brief's fact sheets belong here;
+ * leave `alternative` out when the fact sheet does not give one.
+ */
+interface Decision {
+  decision: string;
+  alternative?: string;
+  why: string;
+}
+
+interface Props {
+  items: Decision[];
+}
+
+const { items } = Astro.props;
+---
+
+<div class="decisions">
+  {
+    items.map((item) => (
+      <dl class="decision">
+        <div class="decision__part">
+          <dt>Decision</dt>
+          <dd>{item.decision}</dd>
+        </div>
+        {item.alternative && (
+          <div class="decision__part">
+            <dt>Alternative considered</dt>
+            <dd>{item.alternative}</dd>
+          </div>
+        )}
+        <div class="decision__part">
+          <dt>Why</dt>
+          <dd>{item.why}</dd>
+        </div>
+      </dl>
+    ))
+  }
+</div>
+
+<style>
+  .decisions {
+    display: grid;
+    margin-block: var(--space-5);
+    border-top: var(--hairline) solid var(--color-rule);
+  }
+
+  .decision {
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-5) 0 var(--space-5) var(--space-5);
+    border-bottom: var(--hairline) solid var(--color-rule);
+    box-sizing: border-box;
+    background: linear-gradient(var(--color-brand), var(--color-brand)) left var(--space-5) / var(--focus-ring)
+      calc(100% - 2 * var(--space-5)) no-repeat;
+  }
+
+  .decision__part {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  dt {
+    font-family: var(--font-display);
+    font-size: var(--step-small);
+    line-height: var(--lh-small);
+    font-weight: var(--weight-bold);
+    color: var(--color-ink-muted);
+  }
+
+  dd {
+    margin: 0;
+  }
+</style>

@@ -1,0 +1,104 @@
+---
+/**
+ * Code snippet: mono, surface, horizontal scroll, a "Copy code" button, and
+ * syntax highlighting in token colours only (Shiki's css-variables theme,
+ * mapped to tokens below).
+ */
+import { Code } from 'astro:components';
+import type { ComponentProps } from 'astro/types';
+
+interface Props {
+  /** Unique on the page. */
+  id: string;
+  code: string;
+  lang: ComponentProps<typeof Code>['lang'];
+  caption?: string;
+}
+
+const { id, code, lang, caption } = Astro.props;
+---
+
+<figure class="code-block">
+  <div class="code-block__frame">
+    <div class="code-block__source" id={`${id}-source`}>
+      <Code code={code.trim()} lang={lang} theme="css-variables" />
+    </div>
+    <button
+      class="btn btn--secondary btn--small copy-button code-block__copy"
+      type="button"
+      data-copy-from={`#${id}-source`}
+      data-copy-status={`#${id}-status`}
+      data-copy-announce="Code copied"
+    >
+      <svg class="copy-button__check" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false">
+        <path d="M2.25 6.4 4.9 9 9.75 3.25"></path>
+      </svg>
+      <span data-copy-label>Copy code</span>
+    </button>
+  </div>
+  {caption && <figcaption>{caption}</figcaption>}
+  <p class="visually-hidden" id={`${id}-status`} aria-live="polite"></p>
+</figure>
+
+<script>
+  import '../scripts/copy';
+</script>
+
+<style>
+  .code-block {
+    --astro-code-foreground: var(--color-ink);
+    --astro-code-background: var(--color-surface);
+    --astro-code-token-keyword: var(--color-brand);
+    --astro-code-token-string: var(--color-settled);
+    --astro-code-token-string-expression: var(--color-settled);
+    --astro-code-token-constant: var(--color-ink);
+    --astro-code-token-comment: var(--color-ink-muted);
+    --astro-code-token-punctuation: var(--color-ink-muted);
+    --astro-code-token-function: var(--color-ink);
+    --astro-code-token-parameter: var(--color-ink);
+    --astro-code-token-link: var(--color-brand);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3);
+    margin-block: var(--space-6);
+  }
+
+  .code-block__frame {
+    position: relative;
+    min-width: 0;
+    border: var(--hairline) solid var(--color-rule);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+  }
+
+  .code-block__source :global(pre) {
+    margin: 0;
+    padding: var(--space-7) var(--space-5) var(--space-5);
+    overflow-x: auto;
+    border-radius: var(--radius-md);
+    font-family: var(--font-mono);
+    font-size: var(--step-small);
+    font-weight: 400;
+    line-height: 1.7;
+    tab-size: 4;
+  }
+
+  .code-block__source :global(pre:focus-visible) {
+    outline-offset: calc(-1 * var(--focus-ring));
+  }
+
+  .code-block__copy {
+    position: absolute;
+    top: var(--space-2);
+    right: var(--space-2);
+    background: var(--color-surface);
+  }
+
+
+  figcaption {
+    font-family: var(--font-display);
+    font-size: var(--step-small);
+    line-height: var(--lh-small);
+    color: var(--color-ink-muted);
+  }
+</style>
