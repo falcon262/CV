@@ -1,0 +1,245 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+import { navItems, site } from '../data/site';
+import { url } from '../lib/url';
+
+const cvHref = url(site.cvPath);
+---
+
+<header class="site-header" data-site-header>
+  <div class="container site-header__inner">
+    <a class="wordmark" href={url('')}>Joseph Kofi Asante</a>
+
+    <nav class="site-nav" aria-label="Main">
+      <ul role="list">
+        {
+          navItems.map((item) => (
+            <li>
+              <a href={url(`#${item.hash}`)}>{item.label}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="site-header__actions">
+      <ThemeToggle />
+      <a class="btn btn--secondary btn--small header-cv" href={cvHref} download>Download CV</a>
+      <button
+        class="menu-button"
+        type="button"
+        aria-haspopup="dialog"
+        aria-expanded="false"
+        aria-controls="site-menu"
+        data-menu-open
+      >
+        Menu
+      </button>
+    </div>
+  </div>
+
+  <dialog id="site-menu" class="sheet" aria-label="Menu" data-menu>
+    <div class="container sheet__bar">
+      <a class="wordmark" href={url('')}>Joseph Kofi Asante</a>
+      <button class="menu-button menu-button--close" type="button" data-menu-close>Close</button>
+    </div>
+    <nav class="container sheet__nav" aria-label="Main">
+      <ul role="list">
+        {
+          navItems.map((item) => (
+            <li>
+              <a href={url(`#${item.hash}`)}>{item.label}</a>
+            </li>
+          ))
+        }
+      </ul>
+      <a class="btn btn--secondary" href={cvHref} download>Download CV</a>
+    </nav>
+  </dialog>
+</header>
+
+<script>
+  import '../scripts/menu';
+  import '../scripts/header';
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--color-paper);
+    border-bottom: var(--hairline) solid var(--color-rule);
+    transition: transform var(--dur-base) var(--ease-standard);
+  }
+
+  .site-header.is-hidden {
+    transform: translateY(calc(-100% - var(--hairline)));
+  }
+
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+    min-height: var(--header-height);
+  }
+
+  .wordmark {
+    font-weight: var(--weight-bold);
+    font-size: var(--step-body);
+    color: var(--color-ink);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .wordmark:hover {
+    color: var(--color-brand);
+  }
+
+  .site-nav {
+    margin-left: auto;
+  }
+
+  .site-nav ul,
+  .sheet__nav ul {
+    list-style: none;
+  }
+
+  .site-nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-5);
+  }
+
+  .site-nav a {
+    font-size: var(--step-small);
+    color: var(--color-ink);
+    text-decoration: none;
+  }
+
+  .site-nav a:hover {
+    color: var(--color-brand);
+  }
+
+  .site-header__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .menu-button {
+    display: none;
+    min-height: 40px;
+    padding: var(--space-2) var(--space-4);
+    border: var(--hairline) solid var(--color-ink-muted);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    font-size: var(--step-small);
+    font-weight: var(--weight-bold);
+    cursor: pointer;
+    transition:
+      border-color var(--dur-fast) var(--ease-standard),
+      color var(--dur-fast) var(--ease-standard);
+  }
+
+  .menu-button:hover {
+    border-color: var(--color-brand);
+    color: var(--color-brand);
+  }
+
+  .menu-button:active {
+    transform: translateY(1px);
+  }
+
+  /*
+    Below 768px, with JavaScript: wordmark, theme toggle and a menu button.
+    Without JavaScript the navigation simply wraps under the wordmark.
+  */
+  @media (max-width: 767.98px) {
+    .site-header__inner {
+      flex-wrap: wrap;
+      padding-block: var(--space-3);
+    }
+
+    .site-nav {
+      order: 3;
+      flex-basis: 100%;
+      margin-left: 0;
+    }
+
+    .site-header__actions {
+      margin-left: auto;
+    }
+
+    .header-cv {
+      display: none;
+    }
+
+    :global(html.js) .site-header__inner {
+      flex-wrap: nowrap;
+      padding-block: 0;
+    }
+
+    :global(html.js) .site-nav {
+      display: none;
+    }
+
+    :global(html.js) .menu-button {
+      display: inline-flex;
+      align-items: center;
+    }
+  }
+
+  /* Full-screen menu sheet */
+  .sheet {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: var(--color-paper);
+    color: var(--color-ink);
+  }
+
+  .sheet::backdrop {
+    background: var(--color-paper);
+  }
+
+  .sheet__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: var(--header-height);
+    border-bottom: var(--hairline) solid var(--color-rule);
+  }
+
+  .sheet .menu-button--close {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .sheet__nav {
+    display: grid;
+    gap: var(--space-7);
+    padding-block: var(--space-7);
+  }
+
+  .sheet__nav ul {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .sheet__nav ul a {
+    font-size: var(--step-h2);
+    line-height: var(--lh-h2);
+    font-weight: var(--weight-bold);
+    color: var(--color-ink);
+    text-decoration: none;
+  }
+
+  .sheet__nav .btn {
+    justify-self: start;
+  }
+</style>

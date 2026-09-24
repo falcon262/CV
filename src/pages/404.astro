@@ -1,0 +1,33 @@
+---
+import Base from '../layouts/Base.astro';
+import { url } from '../lib/url';
+---
+
+<Base
+  title="Page not found, Joseph Kofi Asante"
+  description="This page doesn't exist."
+  path="404.html"
+  noindex
+  mainClass="not-found"
+>
+  <div class="container not-found__inner">
+    <h1>This page doesn't exist.</h1>
+    <p><a class="btn btn--primary" href={url('')}>Go to the home page</a></p>
+  </div>
+</Base>
+
+<style>
+  /* The only centred page on the site. */
+  :global(.not-found) {
+    display: grid;
+    place-items: center;
+  }
+
+  .not-found__inner {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-6);
+    padding-block: var(--space-10);
+    text-align: center;
+  }
+</style>

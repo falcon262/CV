@@ -1,0 +1,104 @@
+/*
+  Design tokens. Every colour, type, spacing, radius and motion value in the
+  site comes from this file (docs/brief.md, section 5.1).
+  Light is the default. Dark applies with data-theme="dark", or when the OS
+  prefers dark and the visitor has not chosen light.
+*/
+
+:root {
+  --color-paper: #F6F8FB;      /* page background, cool ledger white */
+  --color-surface: #FFFFFF;    /* record block, media frames, code */
+  --color-ink: #14213D;        /* primary text */
+  --color-ink-muted: #56627A;  /* secondary text, metadata */
+  --color-rule: #D8DEE8;       /* hairlines, borders */
+  --color-brand: #2E5090;      /* ledger blue: links, focus, parsed underlines, progress */
+  --color-settled: #1E7A5A;    /* status only: balanced, settled, in progress */
+
+  --font-display: "Schibsted Grotesk Variable", "Helvetica Neue", Arial, sans-serif;
+  --font-serif: "Source Serif 4 Variable", Georgia, serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  /* fluid type: 390px to 1440px viewport */
+  --step-display: clamp(3rem, 2.071rem + 3.81vw, 5.5rem);      /* 48 to 88, lh 1.0, tracking -0.02em */
+  --step-h1: clamp(2.375rem, 1.957rem + 1.714vw, 3.5rem);      /* 38 to 56, lh 1.07 */
+  --step-h2: clamp(1.75rem, 1.611rem + 0.571vw, 2.125rem);     /* 28 to 34, lh 1.18 */
+  --step-h3: clamp(1.25rem, 1.204rem + 0.19vw, 1.375rem);      /* 20 to 22, lh 1.36 */
+  --step-body: clamp(1rem, 0.977rem + 0.095vw, 1.0625rem);     /* 16 to 17, lh 1.65 */
+  --step-body-lg: clamp(1.125rem, 1.08rem + 0.19vw, 1.25rem);  /* hero subline */
+  --step-serif: 1.125rem;                                       /* case study body, lh 1.67 */
+  --step-small: 0.875rem;                                       /* lh 1.57 */
+  --step-caption: 0.8125rem;                                    /* lh 1.54 */
+
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;  --space-5: 24px;
+  --space-6: 32px; --space-7: 48px; --space-8: 64px; --space-9: 96px;  --space-10: 128px;
+
+  --radius-sm: 2px;    /* chips, inputs */
+  --radius-md: 8px;    /* media frames, record block, code */
+  --radius-full: 999px;/* theme toggle, portrait */
+
+  --measure: 68ch;
+  --content-max: 1200px;
+  --gutter: 24px;
+
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --dur-slow: 320ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-exit: cubic-bezier(0.3, 0, 1, 1);
+
+  /*
+    Derived tokens. These only restate values given in the brief's comments
+    (line heights, tracking, weights, grid) so components never hard-code them.
+  */
+  --lh-display: 1;
+  --lh-h1: 1.07;
+  --lh-h2: 1.18;
+  --lh-h3: 1.36;
+  --lh-body: 1.65;
+  --lh-serif: 1.67;
+  --lh-small: 1.57;
+  --lh-caption: 1.54;
+  --tracking-display: -0.02em;
+
+  --weight-medium: 500;
+  --weight-bold: 700;
+
+  --hairline: 1px;
+  --focus-ring: 2px;
+  --header-height: var(--space-8);   /* 64px */
+  --page-margin: 20px;               /* 4 columns at 390 */
+  --grid-columns: 4;
+  --measure-about: 64ch;
+  --measure-subline: 60ch;
+
+  color-scheme: light;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --page-margin: var(--space-6);   /* at least 32px */
+    --grid-columns: 8;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --grid-columns: 12;
+  }
+}
+
+:root[data-theme="dark"] {
+  --color-paper: #0D1524;  --color-surface: #131D30;
+  --color-ink: #E7EBF3;    --color-ink-muted: #9AA6BD;
+  --color-rule: #26324A;   --color-brand: #86A3E6;  --color-settled: #5CC49A;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-paper: #0D1524;  --color-surface: #131D30;
+    --color-ink: #E7EBF3;    --color-ink-muted: #9AA6BD;
+    --color-rule: #26324A;   --color-brand: #86A3E6;  --color-settled: #5CC49A;
+    color-scheme: dark;
+  }
+}
