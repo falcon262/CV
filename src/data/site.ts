@@ -12,7 +12,7 @@ export const site = {
     linkedin: 'https://www.linkedin.com/in/joseph-asante-864892185',
     github: 'https://github.com/falcon262',
   },
-  /** Supplied by Joseph before launch. See README.md. */
+  /** Printed by `npm run cv` from src/data/cv.ts, or replaced by Joseph. See README.md. */
   cvPath: 'cv/Joseph-Kofi-Asante-CV.pdf',
   home: {
     title: 'Joseph Kofi Asante, Senior .NET Engineer',

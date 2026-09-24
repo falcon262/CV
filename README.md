@@ -36,6 +36,7 @@ link with `url()` from `src/lib/url.ts`; never hard-code a leading `/`.
 | `npm run test:a11y` | Playwright tests: axe on every route in both themes, the keyboard pass and the motion behaviour. Run after a build. |
 | `npm run lhci` | Lighthouse CI (mobile) on `/` and `/work/apl/`; fails below 95 in any category. Run after a build. |
 | `npm run og` | Regenerates `public/og.png` from the hidden `/og` page, and the PNG favicons from `public/favicon.svg`. Run after a build, then build again. |
+| `npm run cv` | Prints the hidden `/cv-print` page to `public/cv/Joseph-Kofi-Asante-CV.pdf`: two A4 pages of real, selectable text with working links. Run after a build, then build again. |
 
 Playwright and Lighthouse need a Chromium. Either run `npx playwright install chromium` once,
 or point them at one you already have with `CHROMIUM_PATH` (Playwright) and `CHROME_PATH`
@@ -116,8 +117,25 @@ and links out to `url`. With no posts there is no section at all.
 
 ## The CV PDF
 
-Put the current CV at **`public/cv/Joseph-Kofi-Asante-CV.pdf`**. Every "Download CV" button
-links there. Until it exists, `npm run check` and the link check warn locally and fail in CI.
+Every "Download CV" button links to **`public/cv/Joseph-Kofi-Asante-CV.pdf`**. It is printed
+from the site's own data, so it never says more than the site does:
+
+- The CV wording (profile, points for each role, the APL project, earlier work) is in
+  `src/data/cv.ts`.
+- Titles, dates, locations, contact details, tools and credentials come from the same data
+  files as the site.
+- The layout is `src/pages/cv-print.astro`, a hidden page (noindex, not in the sitemap).
+
+After changing any of these, run `npm run build`, `npm run cv` and `npm run build` again, look
+at the PDF, and commit it. It must stay at two pages.
+
+The CV uses the static Schibsted Grotesk files (`@fontsource/schibsted-grotesk`) rather than
+the variable font. Chromium's PDF output draws variable fonts as Type 3 glyph shapes, which some
+applicant tracking systems read poorly; the static files embed as ordinary TrueType text.
+
+To use a CV you wrote yourself instead, replace the file at the same path; nothing else needs
+to change. If the file is missing, `npm run check` and the link check warn locally and fail
+in CI.
 
 ## Deployment
 

@@ -16,6 +16,7 @@
     "size": "node scripts/js-size.mjs",
     "screens": "node --experimental-strip-types --no-warnings=ExperimentalWarning scripts/screens.ts",
     "og": "node --experimental-strip-types --no-warnings=ExperimentalWarning scripts/og.ts",
+    "cv": "node --experimental-strip-types --no-warnings=ExperimentalWarning scripts/cv.ts",
     "test:a11y": "playwright test",
     "lhci": "lhci autorun"
   },
@@ -25,6 +26,7 @@
     "@fontsource-variable/jetbrains-mono": "5.3.0",
     "@fontsource-variable/schibsted-grotesk": "5.3.0",
     "@fontsource-variable/source-serif-4": "5.3.0",
+    "@fontsource/schibsted-grotesk": "5.3.0",
     "astro": "7.3.5",
     "sharp": "0.35.4"
   },

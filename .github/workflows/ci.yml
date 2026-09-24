@@ -1,7 +1,7 @@
 name: CI
 
 # Pull request checks (docs/brief.md, section 12). `npm run check` runs in strict mode here
-# (CI=true), so it fails until public/cv/Joseph-Kofi-Asante-CV.pdf is committed.
+# (CI=true), so it fails if public/cv/Joseph-Kofi-Asante-CV.pdf is missing.
 # Later steps still run after a failed check, so every result is visible on the pull request.
 
 on:

@@ -228,3 +228,58 @@ at full width, as on tablets (14px at 1024 to 1366). 1440 is unchanged.
 1366, 1280, 1024, 768 and 390, and that the record block fits wherever it is not its own
 scroll container. With the old breakpoint the test fails at 1280 (20px overflow); with the
 fix all seven widths pass.
+
+## Cutover: the CV PDF (2026-09-24)
+
+**What:** `public/cv/Joseph-Kofi-Asante-CV.pdf`, printed by `npm run cv` from the hidden
+`/cv-print` page. Wording from `src/data/cv.ts`, restating the brief's fact sheets only;
+titles, dates, contacts, tools and credentials from the site's data files. The retired
+resume in `game_images/` was not used.
+
+**Checked:** each page rendered to PNG with pdf.js and reviewed; text extracted and scanned
+for blocked terms, em dashes, arrows, middle dots, phone numbers and all-caps runs; page
+count, fonts, links, tags and bookmarks read from the file.
+
+**Pass 1: what was wrong**
+- Three pages, not two.
+- Wide gaps before every comma, full stop and colon: `font-variant-numeric: tabular-nums`
+  on the page also switches Schibsted Grotesk's punctuation to tabular widths.
+- Fonts embedded as Type 3 glyph shapes. Chromium's PDF output does this for any variable
+  font, and some applicant tracking systems read Type 3 text poorly.
+- Text order in the file put every bullet point after the role headings: absolutely
+  positioned list items are painted after the rest of the page.
+- The fourth contact link wrapped onto a line of its own, and the skills labels wrapped in a
+  fixed-width column.
+
+**Changes**
+- Removed `tabular-nums`.
+- The page loads the static Schibsted Grotesk 500 and 700 files
+  (`@fontsource/schibsted-grotesk`) under the display family's name, so type still comes
+  from the tokens; they embed as TrueType (CIDFontType2) with ToUnicode maps.
+- Bullet markers are a grid column instead of absolute positioning, so the text runs in
+  reading order.
+- The header is two columns (who on the left, contact links stacked on the right); skills
+  are "Group: items" lines.
+- No footer on page 1, so the name is the first text a parser meets; from page 2, name,
+  email and page count.
+- Trimmed the longest points, all still within the fact sheets. The PwC stack line no longer
+  repeats Active Directory (LDAP), which its ECOBUD point already names. Left out for
+  length: Katapult Mauritius, the 3D office tour, the 3D GPS visualisation and Degraded
+  Redundancy.
+- Sections 16px apart instead of 24px.
+
+**Pass 2**
+- Two A4 pages, 68 KB, PDF 1.4. Title "Joseph Kofi Asante, CV", language en-GB, tagged,
+  with bookmarks for every section.
+- Fonts: TrueType (CIDFontType2) only, with ToUnicode maps. The extracted text reads in
+  order: name, headline, availability, contacts, profile, then each role's heading followed
+  by its points.
+- Clickable links: email, portfolio, LinkedIn and GitHub.
+- Scan clean: no blocked terms, no Falcon Solutions, no AI-102, no phone number, no em dash,
+  arrow or middle dot. The only all-caps runs are names and acronyms (ECOWAS, ECOBUD, NACHA,
+  IFRS, LDAP, PARC, REST).
+- Only the two allowed metrics appear, and none of the scale facts (44 domains, 75+ APIs,
+  443 items, 32 cost centres). APL stands alone as a selected project because the brief
+  does not say where or when it was delivered.
+- Site pages unchanged: all 47 screenshots from `npm run screens` (every route at 1440, 768
+  and 390 in both themes, plus the hero frames) are pixel-identical to the previous run.

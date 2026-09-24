@@ -140,7 +140,7 @@ for (const file of files) {
 }
 
 if (!existsSync(cvPdf)) {
-  const message = 'public/cv/Joseph-Kofi-Asante-CV.pdf is missing (Joseph supplies it before launch)';
+  const message = 'public/cv/Joseph-Kofi-Asante-CV.pdf is missing (run `npm run cv`, or add your own)';
   if (strict) errors.push(message);
   else warnings.push(message);
 }

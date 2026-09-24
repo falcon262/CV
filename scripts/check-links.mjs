@@ -6,8 +6,8 @@
  * meta refresh, canonical and Open Graph URLs), including #fragment targets.
  * External links are listed, not fetched. Run `npm run build` first.
  *
- * The CV PDF is supplied by Joseph before launch: a missing CV is a warning
- * locally and an error in strict mode (--strict, or CI=true).
+ * The CV PDF comes from `npm run cv` (or Joseph's own file): a missing CV is a
+ * warning locally and an error in strict mode (--strict, or CI=true).
  */
 import { existsSync, statSync } from 'node:fs';
 import { readdir, readFile } from 'node:fs/promises';
@@ -98,7 +98,7 @@ for (const file of pages) {
     const resolved = fileFor(target.pathname);
     if (!resolved) {
       if (target.pathname === cvPath) {
-        (strict ? broken : warnings).push(`${label}: ${reference} (the CV PDF Joseph supplies before launch)`);
+        (strict ? broken : warnings).push(`${label}: ${reference} (the CV PDF: run \`npm run cv\`, or add your own)`);
       } else {
         broken.push(`${label}: ${reference} does not resolve`);
       }

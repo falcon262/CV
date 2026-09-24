@@ -25,8 +25,8 @@ export default defineConfig({
   integrations: [
     mdx(),
     sitemap({
-      // The OG capture page and the 404 page are not content.
-      filter: (page) => !/\/og\/$/.test(page) && !/\/404\/?$/.test(page),
+      // The OG and CV capture pages and the 404 page are not content.
+      filter: (page) => !/\/(og|cv-print)\/$/.test(page) && !/\/404\/?$/.test(page),
     }),
   ],
 });
