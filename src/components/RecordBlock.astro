@@ -1,0 +1,205 @@
+---
+/**
+ * The hero record block: four NACHA-style records, 94 characters each.
+ * Final (resting) state is the default CSS; the parse animation in Hero.astro
+ * is layered on top with .is-parsing.
+ */
+interface Segment {
+  text: string;
+  field?: 'underline' | 'balanced';
+}
+
+interface RecordLine {
+  /** NACHA record type code: 1 header, 5 batch header, 6 entry detail, 9 control. */
+  type: string;
+  text: string;
+  fields: string[];
+}
+
+const records: RecordLine[] = [
+  {
+    type: '1',
+    text: '101 ASANTE JOSEPH KOFI     SENIOR SOFTWARE ENGINEER   TECHNICAL LEAD                  ACCRA GH',
+    fields: ['ASANTE JOSEPH KOFI', 'SENIOR SOFTWARE ENGINEER', 'ACCRA GH'],
+  },
+  {
+    type: '5',
+    text: '520 CSHARP DOTNET          PAYMENTS BUDGETING TAX REGULATORY                      US GH ECOWAS',
+    fields: [],
+  },
+  {
+    type: '6',
+    text: '622 AVAILABILITY           REMOTE OR RELOCATION                                          UK EU',
+    fields: [],
+  },
+  {
+    type: '9',
+    text: '900 ENTRIES 0000004        DEBITS 000000000000  CREDITS 000000000000                  BALANCED',
+    fields: ['BALANCED'],
+  },
+];
+
+function segments(record: RecordLine): Segment[] {
+  if (record.text.length !== 94) {
+    throw new Error(`Record ${record.type} is ${record.text.length} characters; NACHA records are 94.`);
+  }
+  const result: Segment[] = [];
+  let cursor = 0;
+  for (const field of record.fields) {
+    const start = record.text.indexOf(field, cursor);
+    if (start < 0) throw new Error(`Field "${field}" not found in record ${record.type}.`);
+    if (start > cursor) result.push({ text: record.text.slice(cursor, start) });
+    result.push({ text: field, field: field === 'BALANCED' ? 'balanced' : 'underline' });
+    cursor = start + field.length;
+  }
+  if (cursor < record.text.length) result.push({ text: record.text.slice(cursor) });
+  return result;
+}
+
+const lines = records.map((record, index) => ({
+  ...record,
+  index,
+  segments: segments(record),
+  // The full-contrast layer shown while parsing; BALANCED has its own colour change.
+  overlay: record.text.replace('BALANCED', '        '),
+}));
+---
+
+<div class="record" data-record>
+  <button class="record__button" type="button" aria-label="Replay the record animation" data-record-replay>
+    <span class="record__lines" aria-hidden="true">
+      {
+        lines.map((line) => (
+          <span class="record__line" data-type={line.type} data-overlay={line.overlay} style={`--line: ${line.index}`}>
+            {line.segments.map((segment) =>
+              segment.field ? (
+                <span class:list={['field', { 'field--balanced': segment.field === 'balanced' }]} data-text={segment.text}>
+                  {segment.text}
+                </span>
+              ) : (
+                segment.text
+              ),
+            )}
+            {line.type === '9' && (
+              <svg class="record__check" viewBox="0 0 12 12" width="12" height="12" focusable="false">
+                <path d="M2.25 6.4 4.9 9 9.75 3.25" pathLength="1" />
+              </svg>
+            )}
+          </span>
+        ))
+      }
+    </span>
+  </button>
+</div>
+
+<style>
+  .record {
+    /* Sized in characters: 94 per record, plus room for the check. */
+    --record-chars: 96;
+    --record-pad: var(--space-4);
+    container-type: inline-size;
+    min-width: 0;
+  }
+
+  .record__button {
+    display: block;
+    width: max-content;
+    max-width: none;
+    padding: var(--record-pad);
+    border: var(--hairline) solid var(--color-rule);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    color: var(--color-ink-muted);
+    font-family: var(--font-mono);
+    font-weight: var(--weight-medium);
+    /* Fit 96 mono characters (0.6em each) to the container, between 9px and 14px. */
+    font-size: clamp(0.5625rem, (100cqi - 2 * var(--record-pad) - 2px) / (var(--record-chars) * 0.6), var(--step-small));
+    line-height: 2;
+    font-variant-ligatures: none;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color var(--dur-fast) var(--ease-standard);
+  }
+
+  .record__button:hover {
+    border-color: var(--color-ink-muted);
+  }
+
+  .record__lines {
+    display: block;
+  }
+
+  .record__line {
+    position: relative;
+    display: block;
+    width: max-content;
+    padding-block: 0.35em;
+    white-space: pre;
+  }
+
+  /* Ledger rules between records. */
+  .record__line + .record__line {
+    border-top: var(--hairline) solid var(--color-rule);
+  }
+
+  .field {
+    position: relative;
+    color: var(--color-ink);
+  }
+
+  /* The parsed-field underline: 1px, brand. */
+  .field::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.2em;
+    height: var(--hairline);
+    background: var(--color-brand);
+    transform-origin: left center;
+  }
+
+  .field--balanced {
+    color: var(--color-settled);
+  }
+
+  .record__check {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    margin-left: 0.5ch;
+    vertical-align: -0.12em;
+    fill: none;
+    stroke: var(--color-settled);
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /*
+    Below 768px: only records 1 and 9. The block keeps its natural width,
+    scrolls inside its own container, and is cropped with a right-edge fade.
+  */
+  @media (max-width: 767.98px) {
+    .record {
+      --record-pad: var(--space-4);
+      overflow-x: auto;
+      scrollbar-width: none;
+      mask-image: linear-gradient(to right, black calc(100% - var(--space-7)), transparent);
+    }
+
+    .record::-webkit-scrollbar {
+      display: none;
+    }
+
+    .record__button {
+      font-size: var(--step-caption);
+      padding-right: calc(var(--record-pad) + var(--space-7));
+    }
+
+    .record__line[data-type='5'],
+    .record__line[data-type='6'] {
+      display: none;
+    }
+  }
+</style>

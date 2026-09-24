@@ -1,0 +1,114 @@
+---
+import Diagram from './Diagram.astro';
+import { variantsFor, type DiagramContext, type DiagramLayouts } from '../../lib/diagram-variants';
+
+interface Props {
+  context: DiagramContext;
+  caption?: string;
+}
+
+const { context, caption } = Astro.props;
+
+const full =
+  'A staff question in plain English goes to the reporting engine, then to operational data, then to the live report catalogue. The link between the engine and the data carries no credentials.';
+
+const nodes = {
+  question: ['Staff question', 'in plain English'],
+  engine: ['Reporting', 'engine'],
+  data: ['Operational', 'data'],
+  catalogue: ['Live report', 'catalogue'],
+};
+
+const note = ['No credentials in', 'the reporting path'];
+
+const layouts: DiagramLayouts = {
+  wide: {
+    columns: 4,
+    rows: 1,
+    boxWidth: 150,
+    boxHeight: 56,
+    gapX: [48, 172, 48],
+    gapY: 0,
+    description: full,
+    nodes: [
+      { id: 'question', label: nodes.question, col: 0, row: 0 },
+      { id: 'engine', label: nodes.engine, col: 1, row: 0 },
+      { id: 'data', label: nodes.data, col: 2, row: 0 },
+      { id: 'catalogue', label: nodes.catalogue, col: 3, row: 0 },
+    ],
+    edges: [
+      { from: 'question', to: 'engine' },
+      { from: 'engine', to: 'data', note, noteSide: 'below' },
+      { from: 'data', to: 'catalogue' },
+    ],
+  },
+  medium: {
+    columns: 3,
+    rows: 2,
+    boxWidth: 150,
+    boxHeight: 56,
+    gapX: 40,
+    gapY: 64,
+    description: full,
+    nodes: [
+      { id: 'question', label: nodes.question, col: 0, row: 0 },
+      { id: 'engine', label: nodes.engine, col: 1, row: 0 },
+      { id: 'data', label: nodes.data, col: 1, row: 1 },
+      { id: 'catalogue', label: nodes.catalogue, col: 2, row: 1 },
+    ],
+    edges: [
+      { from: 'question', to: 'engine' },
+      { from: 'engine', to: 'data', note, noteSide: 'right' },
+      { from: 'data', to: 'catalogue' },
+    ],
+  },
+  narrow: {
+    columns: 1,
+    rows: 4,
+    boxWidth: 170,
+    boxHeight: 56,
+    gapX: 0,
+    gapY: [28, 56, 28],
+    description: full,
+    nodes: [
+      { id: 'question', label: nodes.question, col: 0, row: 0 },
+      { id: 'engine', label: nodes.engine, col: 0, row: 1 },
+      { id: 'data', label: nodes.data, col: 0, row: 2 },
+      { id: 'catalogue', label: nodes.catalogue, col: 0, row: 3 },
+    ],
+    edges: [
+      { from: 'question', to: 'engine' },
+      { from: 'engine', to: 'data', note, noteSide: 'right' },
+      { from: 'data', to: 'catalogue' },
+    ],
+  },
+  compact: {
+    columns: 2,
+    rows: 2,
+    boxWidth: 136,
+    boxHeight: 56,
+    gapX: 32,
+    gapY: 28,
+    description:
+      'Simplified: a staff question in plain English goes to the reporting engine, then operational data, then the live report catalogue.',
+    nodes: [
+      { id: 'question', label: nodes.question, col: 0, row: 0 },
+      { id: 'engine', label: nodes.engine, col: 1, row: 0 },
+      { id: 'data', label: nodes.data, col: 1, row: 1 },
+      { id: 'catalogue', label: nodes.catalogue, col: 0, row: 1 },
+    ],
+    edges: [
+      { from: 'question', to: 'engine' },
+      { from: 'engine', to: 'data' },
+      { from: 'data', to: 'catalogue' },
+    ],
+  },
+};
+---
+
+<Diagram
+  uid={`ai-${context}`}
+  title="AI reporting engine architecture"
+  variants={variantsFor(context, layouts)}
+  caption={caption}
+/>

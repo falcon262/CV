@@ -55,7 +55,8 @@ async function discoverRoutes(): Promise<Route[]> {
 
 async function startPreview(): Promise<ChildProcess> {
   const astro = path.join(root, 'node_modules', '.bin', 'astro');
-  const server = spawn(astro, ['preview', '--port', String(port)], { cwd: root, stdio: 'ignore' });
+  // --ignore-lock keeps the server in the foreground so it stops with this script.
+  const server = spawn(astro, ['preview', '--port', String(port), '--ignore-lock'], { cwd: root, stdio: 'ignore' });
   const deadline = Date.now() + 30_000;
   while (Date.now() < deadline) {
     try {

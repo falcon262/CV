@@ -1,0 +1,53 @@
+---
+import { toolGroups } from '../data/skills';
+---
+
+<section class="section tools" aria-labelledby="tools-title">
+  <div class="container">
+    <h2 id="tools-title" class="section__title">Tools I use</h2>
+    <div class="tools__groups">
+      {
+        toolGroups.map((group) => (
+          <div class="tools__group">
+            <h3>{group.title}</h3>
+            <p>{group.items.join(', ')}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .tools__groups {
+    display: grid;
+    gap: var(--space-6) var(--gutter);
+  }
+
+  @media (min-width: 768px) {
+    .tools__groups {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .tools__groups {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .tools__group {
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+  }
+
+  .tools__group h3 {
+    font-size: var(--step-body);
+    line-height: var(--lh-body);
+  }
+
+  .tools__group p {
+    color: var(--color-ink-muted);
+  }
+</style>

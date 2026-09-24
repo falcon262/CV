@@ -1,0 +1,95 @@
+---
+import Diagram from './Diagram.astro';
+import { variantsFor, type DiagramContext, type DiagramLayouts } from '../../lib/diagram-variants';
+
+interface Props {
+  context: DiagramContext;
+  caption?: string;
+}
+
+const { context, caption } = Astro.props;
+
+const full =
+  'A business ERP connects to the middleware (saga, outbox, retries), then to the GRA E-VAT service. The certified invoice is returned to the ERP.';
+
+const nodes = {
+  erp: ['Business ERP'],
+  middleware: ['Middleware', '(saga, outbox, retries)'],
+  gra: ['GRA E-VAT', 'service'],
+  certified: ['Certified', 'invoice'],
+};
+
+const layouts: DiagramLayouts = {
+  medium: {
+    columns: 3,
+    rows: 2,
+    boxWidth: 184,
+    boxHeight: 56,
+    gapX: 44,
+    gapY: 36,
+    description: full,
+    nodes: [
+      { id: 'erp', label: nodes.erp, col: 0, row: 0 },
+      { id: 'middleware', label: nodes.middleware, col: 1, row: 0 },
+      { id: 'gra', label: nodes.gra, col: 2, row: 0 },
+      { id: 'certified', label: nodes.certified, col: 1, row: 1 },
+    ],
+    edges: [
+      { from: 'erp', to: 'middleware' },
+      { from: 'middleware', to: 'gra' },
+      { from: 'gra', to: 'certified', route: 'vh' },
+      { from: 'certified', to: 'erp', route: 'hv' },
+    ],
+  },
+  narrow: {
+    columns: 1,
+    rows: 4,
+    boxWidth: 184,
+    boxHeight: 56,
+    gapX: 0,
+    gapY: 24,
+    description: full,
+    nodes: [
+      { id: 'erp', label: nodes.erp, col: 0, row: 0 },
+      { id: 'middleware', label: nodes.middleware, col: 0, row: 1 },
+      { id: 'gra', label: nodes.gra, col: 0, row: 2 },
+      { id: 'certified', label: nodes.certified, col: 0, row: 3 },
+    ],
+    edges: [
+      { from: 'erp', to: 'middleware' },
+      { from: 'middleware', to: 'gra' },
+      { from: 'gra', to: 'certified' },
+      { from: 'certified', to: 'erp', route: 'loop-right' },
+    ],
+  },
+  compact: {
+    columns: 2,
+    rows: 2,
+    boxWidth: 124,
+    boxHeight: 56,
+    gapX: 32,
+    gapY: 28,
+    description:
+      'Simplified: a business ERP connects to the middleware, then to the GRA E-VAT service, and the certified invoice is returned to the ERP.',
+    nodes: [
+      { id: 'erp', label: ['Business', 'ERP'], col: 0, row: 0 },
+      { id: 'middleware', label: ['Middleware'], col: 1, row: 0 },
+      { id: 'gra', label: ['GRA E-VAT'], col: 1, row: 1 },
+      { id: 'certified', label: nodes.certified, col: 0, row: 1 },
+    ],
+    edges: [
+      { from: 'erp', to: 'middleware' },
+      { from: 'middleware', to: 'gra' },
+      { from: 'gra', to: 'certified' },
+      { from: 'certified', to: 'erp' },
+    ],
+  },
+};
+---
+
+<Diagram
+  uid={`evat-${context}`}
+  title="E-VAT middleware architecture"
+  variants={variantsFor(context, layouts)}
+  caption={caption}
+/>

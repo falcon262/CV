@@ -1,0 +1,49 @@
+---
+/**
+ * Wraps one architecture diagram in a <figure>. A diagram has several layouts
+ * (wide, medium, narrow, compact); each variant is shown at the breakpoints given,
+ * so the right-sized SVG is visible and the others are removed with display: none.
+ */
+import DiagramSvg from './DiagramSvg.astro';
+import type { LayoutSpec } from '../../lib/diagram';
+
+export type Breakpoint = 'all' | 'sm' | 'md-up' | 'lg-up' | 'xl-up' | 'md-only' | 'below-lg' | 'below-xl';
+
+interface Props {
+  uid: string;
+  title: string;
+  variants: Array<{ layout: LayoutSpec; show: Breakpoint }>;
+  caption?: string;
+  class?: string;
+}
+
+const { uid, title, variants, caption, class: className } = Astro.props;
+---
+
+<figure class:list={['diagram', className]}>
+  {
+    variants.map((variant, index) => (
+      <DiagramSvg
+        uid={`${uid}-${index}`}
+        title={title}
+        layout={variant.layout}
+        class={variant.show === 'all' ? undefined : `bp-${variant.show}`}
+      />
+    ))
+  }
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<style>
+  .diagram {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  figcaption {
+    max-width: var(--measure);
+    font-size: var(--step-small);
+    line-height: var(--lh-small);
+    color: var(--color-ink-muted);
+  }
+</style>

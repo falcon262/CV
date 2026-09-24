@@ -1,0 +1,133 @@
+---
+import RecordBlock from './RecordBlock.astro';
+import { site } from '../data/site';
+import { url } from '../lib/url';
+
+const headline = 'I build software that has to balance.';
+// Split into word spans at build time for the animation; the h1 carries the full sentence.
+const words = headline.split(' ');
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="container hero__grid">
+    <div class="hero__text">
+      <h1 id="hero-title" class="hero__headline" aria-label={headline}>
+        {
+          words.map((word, index) => (
+            <>
+              <span class="word" style={`--i: ${index}`} aria-hidden="true">
+                {word}
+              </span>
+              {index < words.length - 1 ? ' ' : ''}
+            </>
+          ))
+        }
+      </h1>
+      <div class="hero__after">
+        <p class="hero__subline">
+          Senior .NET engineer and technical lead. For seven years I've built payment, budgeting, tax and
+          regulatory systems for banks, insurers and governments across West Africa and the US.
+        </p>
+        <div class="hero__actions">
+          <a class="btn btn--primary" href="#work">See my work</a>
+          <a class="btn btn--secondary" href={url(site.cvPath)} download>Download CV</a>
+        </div>
+        <p class="hero__availability">Based in Accra, Ghana. Open to senior roles, remote or with relocation.</p>
+      </div>
+    </div>
+
+    <div class="hero__record">
+      <RecordBlock />
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding-block: var(--space-7) var(--space-8);
+  }
+
+  .hero__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+    column-gap: var(--gutter);
+    row-gap: var(--space-6);
+    align-items: center;
+  }
+
+  .hero__record,
+  .hero__text {
+    grid-column: 1 / -1;
+    min-width: 0;
+  }
+
+  /* Below desktop the record block sits above the headline. */
+  .hero__record {
+    order: -1;
+  }
+
+  .hero__headline {
+    font-size: var(--step-display);
+    line-height: var(--lh-display);
+    letter-spacing: var(--tracking-display);
+  }
+
+  .word {
+    display: inline-block;
+  }
+
+  .hero__after {
+    display: grid;
+    gap: var(--space-5);
+    margin-top: var(--space-6);
+  }
+
+  .hero__subline {
+    max-width: var(--measure-subline);
+    font-size: var(--step-body-lg);
+    line-height: var(--lh-body);
+    color: var(--color-ink);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .hero__availability {
+    font-size: var(--step-small);
+    line-height: var(--lh-small);
+    color: var(--color-ink-muted);
+  }
+
+  /*
+    Desktop: headline, subline, actions and availability on the left 7 columns,
+    the record block on the right 5. The block may extend into the right page margin,
+    keeping at least the 32px margin, so its 94 characters stay legible.
+  */
+  @media (min-width: 1280px) {
+    .hero {
+      container-type: inline-size;
+      display: grid;
+      align-items: center;
+      min-height: 88svh;
+      padding-block: var(--space-8);
+    }
+
+    .hero__text {
+      grid-column: 1 / span 7;
+      grid-row: 1;
+      align-self: start;
+    }
+
+    .hero__record {
+      order: 0;
+      grid-column: 8 / span 5;
+      grid-row: 1;
+      align-self: start;
+      margin-top: var(--space-3);
+      margin-right: calc(-1 * max(0px, (100cqi - var(--content-max)) / 2 - var(--page-margin)));
+    }
+  }
+</style>

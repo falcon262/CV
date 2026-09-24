@@ -1,0 +1,95 @@
+---
+import Diagram from './Diagram.astro';
+import { variantsFor, type DiagramContext, type DiagramLayouts } from '../../lib/diagram-variants';
+
+interface Props {
+  context: DiagramContext;
+  caption?: string;
+}
+
+const { context, caption } = Astro.props;
+
+const full =
+  'Core banking data goes to both the IFRS 9 expected credit loss engine and the IFRS 16 lease engine. Both go to regulatory reports.';
+
+const nodes = {
+  core: ['Core banking', 'data'],
+  ifrs9: ['IFRS 9 expected', 'credit loss engine'],
+  ifrs16: ['IFRS 16', 'lease engine'],
+  reports: ['Regulatory', 'reports'],
+};
+
+const layouts: DiagramLayouts = {
+  medium: {
+    columns: 3,
+    rows: 2,
+    boxWidth: 168,
+    boxHeight: 56,
+    gapX: 56,
+    gapY: 28,
+    description: full,
+    nodes: [
+      { id: 'core', label: nodes.core, col: 0, row: 0.5 },
+      { id: 'ifrs9', label: nodes.ifrs9, col: 1, row: 0 },
+      { id: 'ifrs16', label: nodes.ifrs16, col: 1, row: 1 },
+      { id: 'reports', label: nodes.reports, col: 2, row: 0.5 },
+    ],
+    edges: [
+      { from: 'core', to: 'ifrs9' },
+      { from: 'core', to: 'ifrs16' },
+      { from: 'ifrs9', to: 'reports' },
+      { from: 'ifrs16', to: 'reports' },
+    ],
+  },
+  narrow: {
+    columns: 2,
+    rows: 3,
+    boxWidth: 150,
+    boxHeight: 56,
+    gapX: 20,
+    gapY: 32,
+    description: full,
+    nodes: [
+      { id: 'core', label: nodes.core, col: 0.5, row: 0 },
+      { id: 'ifrs9', label: ['IFRS 9 expected', 'credit loss engine'], col: 0, row: 1 },
+      { id: 'ifrs16', label: nodes.ifrs16, col: 1, row: 1 },
+      { id: 'reports', label: nodes.reports, col: 0.5, row: 2 },
+    ],
+    edges: [
+      { from: 'core', to: 'ifrs9' },
+      { from: 'core', to: 'ifrs16' },
+      { from: 'ifrs9', to: 'reports' },
+      { from: 'ifrs16', to: 'reports' },
+    ],
+  },
+  compact: {
+    columns: 2,
+    rows: 3,
+    boxWidth: 120,
+    boxHeight: 48,
+    gapX: 24,
+    gapY: 28,
+    description:
+      'Simplified: core banking data goes to the IFRS 9 and IFRS 16 engines, and both go to regulatory reports.',
+    nodes: [
+      { id: 'core', label: ['Core banking', 'data'], col: 0.5, row: 0 },
+      { id: 'ifrs9', label: ['IFRS 9', 'engine'], col: 0, row: 1 },
+      { id: 'ifrs16', label: ['IFRS 16', 'engine'], col: 1, row: 1 },
+      { id: 'reports', label: ['Regulatory', 'reports'], col: 0.5, row: 2 },
+    ],
+    edges: [
+      { from: 'core', to: 'ifrs9' },
+      { from: 'core', to: 'ifrs16' },
+      { from: 'ifrs9', to: 'reports' },
+      { from: 'ifrs16', to: 'reports' },
+    ],
+  },
+};
+---
+
+<Diagram
+  uid={`ifrs-${context}`}
+  title="IFRS 9 and IFRS 16 engines architecture"
+  variants={variantsFor(context, layouts)}
+  caption={caption}
+/>

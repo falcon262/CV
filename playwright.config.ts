@@ -17,7 +17,7 @@ export default defineConfig({
     },
   },
   webServer: {
-    command: `npm run preview -- --port ${port}`,
+    command: `npm run preview -- --port ${port} --ignore-lock`,
     url: `http://localhost:${port}/CV/`,
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,

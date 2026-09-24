@@ -1,0 +1,71 @@
+---
+/**
+ * Now building. Hidden while flags.nowBuilding is false (src/data/site.ts).
+ * Turn it on only after the cross-border-settlement README is tidy.
+ */
+import { flags } from '../data/site';
+
+const repository = 'https://github.com/falcon262/cross-border-settlement';
+
+// TODO(Joseph): "What works today:" stays empty until you fill it, only from what the
+// cross-border-settlement README and code demonstrably do. The line is hidden while empty.
+const whatWorksToday = '';
+---
+
+{
+  flags.nowBuilding && (
+    <section class="section now" aria-labelledby="now-title">
+      <div class="container">
+        <h2 id="now-title" class="section__title">
+          Now building
+        </h2>
+        <article class="now__tile">
+          <div class="now__head">
+            <h3>Cross-border settlement</h3>
+            <span class="now__badge">In progress</span>
+          </div>
+          <p class="now__description">
+            An open-source payments settlement service in .NET 10 and PostgreSQL, built in public with architecture
+            decision records.
+          </p>
+          {whatWorksToday && (
+            <p class="now__today">
+              <strong>What works today:</strong> {whatWorksToday}
+            </p>
+          )}
+          <p>
+            <a href={repository}>View on GitHub</a>
+          </p>
+        </article>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .now__tile {
+    display: grid;
+    gap: var(--space-4);
+    max-width: var(--measure);
+    padding: var(--space-6);
+    border: var(--hairline) solid var(--color-rule);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+  }
+
+  .now__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .now__badge {
+    padding: var(--space-1) var(--space-2);
+    border: var(--hairline) solid var(--color-settled);
+    border-radius: var(--radius-sm);
+    font-size: var(--step-caption);
+    line-height: var(--lh-caption);
+    color: var(--color-settled);
+  }
+</style>

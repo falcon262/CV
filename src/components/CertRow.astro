@@ -1,0 +1,49 @@
+---
+import type { Credential } from '../data/credentials';
+
+interface Props {
+  credential: Credential;
+}
+
+const { credential } = Astro.props;
+---
+
+<li class="cert">
+  <div class="cert__main">
+    <h3 class="cert__title">{credential.title}</h3>
+    {credential.detail && <p class="cert__detail">{credential.detail}</p>}
+  </div>
+  <p class:list={['cert__when', { 'cert__when--status': credential.status }]}>{credential.when}</p>
+</li>
+
+<style>
+  .cert {
+    display: grid;
+    gap: var(--space-1) var(--space-6);
+    padding-block: var(--space-4);
+    border-top: var(--hairline) solid var(--color-rule);
+  }
+
+  @media (min-width: 768px) {
+    .cert {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: baseline;
+    }
+  }
+
+  .cert__title {
+    font-size: var(--step-body);
+    line-height: var(--lh-body);
+  }
+
+  .cert__detail,
+  .cert__when {
+    font-size: var(--step-small);
+    line-height: var(--lh-small);
+    color: var(--color-ink-muted);
+  }
+
+  .cert__when--status {
+    color: var(--color-settled);
+  }
+</style>

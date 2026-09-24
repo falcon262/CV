@@ -1,0 +1,60 @@
+---
+import { getCollection } from 'astro:content';
+import CaseTile from './CaseTile.astro';
+
+const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
+const feature = work.filter((entry) => entry.data.tile === 'feature');
+const pair = work.filter((entry) => entry.data.tile === 'pair');
+const rows = work.filter((entry) => entry.data.tile === 'row');
+---
+
+<section class="section work" id="work" aria-labelledby="work-title">
+  <div class="container">
+    <h2 id="work-title" class="section__title">Selected work</h2>
+
+    <div class="work__feature">
+      {feature.map((entry) => <CaseTile entry={entry} />)}
+    </div>
+
+    <div class="work__pair">
+      {pair.map((entry) => <CaseTile entry={entry} />)}
+    </div>
+
+    <div class="work__rows">
+      {rows.map((entry) => <CaseTile entry={entry} />)}
+    </div>
+  </div>
+</section>
+
+<style>
+  .work__feature,
+  .work__pair,
+  .work__rows {
+    display: grid;
+  }
+
+  .work__feature {
+    padding-bottom: var(--space-8);
+  }
+
+  .work__pair {
+    gap: var(--space-8) var(--gutter);
+    padding-block: var(--space-8);
+    border-top: var(--hairline) solid var(--color-rule);
+  }
+
+  @media (min-width: 768px) {
+    .work__pair {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .work__rows > :global(*) {
+    padding-block: var(--space-6);
+    border-top: var(--hairline) solid var(--color-rule);
+  }
+
+  .work__rows > :global(:last-child) {
+    padding-bottom: 0;
+  }
+</style>

@@ -175,18 +175,26 @@ a:hover {
 }
 
 .section {
-  padding-block: var(--space-8);
   scroll-margin-top: var(--header-height);
 }
 
+.section > .container {
+  padding-block: var(--space-8);
+}
+
 @media (min-width: 1024px) {
-  .section {
+  .section > .container {
     padding-block: var(--space-9);
   }
 }
 
-.section + .section {
+.section + .section > .container {
   border-top: var(--hairline) solid var(--color-rule);
+}
+
+/* The hero already has room below it. */
+.hero + .section > .container {
+  padding-top: var(--space-7);
 }
 
 .section__title {
@@ -255,33 +263,49 @@ a:hover {
   font-size: var(--step-small);
 }
 
-/* Visibility by breakpoint (used by diagram variants) */
-.bp-lt-md,
-.bp-md-lg,
-.bp-lt-lg,
-.bp-gte-md,
-.bp-gte-lg {
+/*
+  Visibility by breakpoint, used by diagram variants.
+  sm: below 768. md: 768 to 1023. lg: 1024 to 1279. xl: 1280 and up.
+*/
+.bp-sm,
+.bp-md-up,
+.bp-lg-up,
+.bp-xl-up,
+.bp-md-only,
+.bp-below-lg,
+.bp-below-xl {
   display: none;
 }
 
 @media (max-width: 767.98px) {
-  .bp-lt-md,
-  .bp-lt-lg {
+  .bp-sm,
+  .bp-below-lg,
+  .bp-below-xl {
     display: block;
   }
 }
 
 @media (min-width: 768px) and (max-width: 1023.98px) {
-  .bp-md-lg,
-  .bp-lt-lg,
-  .bp-gte-md {
+  .bp-md-up,
+  .bp-md-only,
+  .bp-below-lg,
+  .bp-below-xl {
     display: block;
   }
 }
 
-@media (min-width: 1024px) {
-  .bp-gte-md,
-  .bp-gte-lg {
+@media (min-width: 1024px) and (max-width: 1279.98px) {
+  .bp-md-up,
+  .bp-lg-up,
+  .bp-below-xl {
+    display: block;
+  }
+}
+
+@media (min-width: 1280px) {
+  .bp-md-up,
+  .bp-lg-up,
+  .bp-xl-up {
     display: block;
   }
 }
