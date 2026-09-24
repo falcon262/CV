@@ -156,9 +156,11 @@ const words = headline.split(' ');
   /*
     Desktop: headline, subline, actions and availability on the left 7 columns,
     the record block on the right 5. The block may extend into the right page margin,
-    keeping at least the 32px margin, so its 94 characters stay legible.
+    keeping at least the 32px margin, so its 94 characters stay legible (9px or more).
+    Below 1420px five columns cannot hold 94 characters at that size, so the block
+    stays above the headline, full width, as on tablets.
   */
-  @media (min-width: 1280px) {
+  @media (min-width: 1420px) {
     .hero {
       container-type: inline-size;
       display: grid;

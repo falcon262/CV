@@ -209,3 +209,22 @@ Also checked: JSON-LD `Person` (name, jobTitle, url, sameAs, address) parses as 
 titles, descriptions, canonical and Open Graph tags match section 12; the sitemap lists the
 home page and the five case studies and leaves out `/og/` and the 404; `/og/` is noindex;
 robots.txt points at the sitemap.
+
+## M6: extra widths (2026-09-24)
+
+**Shot:** `/` at 1280 and 1024 (light), beyond the three review widths.
+
+**What was wrong:** at 1280 the record block overflowed the viewport and cropped "BALANCED".
+Five of twelve columns at that width are about 486px, which cannot hold 94 characters at
+the 9px minimum, so the block pushed past the grid and the page scrolled sideways by 20px.
+1024 was fine (stacked layout).
+
+**Change:** the desktop split (headline left 7 columns, record block right 5, 88svh
+minimum height) now starts at 1420px, the first width where five columns plus the right
+margin hold the record at 9px or more. Below that the record block sits above the headline
+at full width, as on tablets (14px at 1024 to 1366). 1440 is unchanged.
+
+**Guard:** `tests/layout.spec.ts` checks every route for horizontal overflow at 1920, 1440,
+1366, 1280, 1024, 768 and 390, and that the record block fits wherever it is not its own
+scroll container. With the old breakpoint the test fails at 1280 (20px overflow); with the
+fix all seven widths pass.
