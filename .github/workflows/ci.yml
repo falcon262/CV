@@ -1,0 +1,67 @@
+name: CI
+
+# Pull request checks (docs/brief.md, section 12). `npm run check` runs in strict mode here
+# (CI=true), so it fails until public/cv/Joseph-Kofi-Asante-CV.pdf is committed.
+# Later steps still run after a failed check, so every result is visible on the pull request.
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check and content guard
+        run: npm run check
+
+      - name: Build
+        if: ${{ !cancelled() }}
+        run: npm run build
+
+      - name: Check internal links
+        if: ${{ !cancelled() }}
+        run: npm run check:links
+
+      - name: Check the client JavaScript budget
+        if: ${{ !cancelled() }}
+        run: npm run size
+
+      - name: Install Playwright's Chromium
+        if: ${{ !cancelled() }}
+        run: npx playwright install --with-deps chromium
+
+      - name: Accessibility, keyboard and motion tests
+        if: ${{ !cancelled() }}
+        run: npm run test:a11y
+
+      - name: Lighthouse
+        if: ${{ !cancelled() }}
+        run: npm run lhci
+
+      - name: Keep the Lighthouse reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-reports
+          path: .lighthouseci
+          if-no-files-found: ignore
