@@ -283,3 +283,19 @@ count, fonts, links, tags and bookmarks read from the file.
   does not say where or when it was delivered.
 - Site pages unchanged: all 47 screenshots from `npm run screens` (every route at 1440, 768
   and 390 in both themes, plus the hero frames) are pixel-identical to the previous run.
+
+## Education: remove the LLB entry (2026-11-14)
+
+**What:** Joseph confirmed the "LLB (Hons) Law, University of Suffolk, online, in progress"
+entry is not his. It is removed from `docs/brief.md` (section 6.10) and from
+`src/data/credentials.ts`, which feeds both the home page and the CV, and the CV PDF is
+regenerated with `npm run cv`.
+
+**Screens:** `npm run screens` before and after, diffed pixel by pixel. The six home page shots
+(1440, 768 and 390, light and dark) are one row shorter. The other 41 shots (every case study,
+the 404 page and the hero frames) are identical. Checked the Education section at all three
+widths: three rows, hairlines intact, "Currently studying" still in the status colour.
+
+**CV PDF:** still two A4 pages, TrueType fonts, tagged, links intact. The Education section
+lists three entries. The text scan is clean: no "LLB", "Suffolk" or "Law", no blocked terms,
+phone number, em dash or middle dot.

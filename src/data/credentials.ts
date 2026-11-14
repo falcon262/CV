@@ -14,7 +14,6 @@ export interface Credential {
 
 export const credentials: Credential[] = [
   { title: 'BSc Computer Engineering', detail: 'University of Ghana, Legon', when: '2021' },
-  { title: 'LLB (Hons) Law', detail: 'University of Suffolk, online', when: 'In progress', status: true },
   { title: 'Microsoft Certified: Azure AI Fundamentals (AI-900)', when: '2024' },
   {
     title: 'Azure Administrator (AZ-104), then Azure Solutions Architect (AZ-305)',

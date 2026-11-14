@@ -365,7 +365,6 @@ h2 "Writing". Each row shows title, date, platform and reading time, and links o
 ### 6.10 Education and certifications (h2 "Education and certifications")
 
 - BSc Computer Engineering, University of Ghana, Legon, 2021
-- LLB (Hons) Law, University of Suffolk, online, in progress
 - Microsoft Certified: Azure AI Fundamentals (AI-900), 2024
 - Currently studying: Azure Administrator (AZ-104), then Azure Solutions Architect (AZ-305)
 
